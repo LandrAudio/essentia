@@ -71,7 +71,7 @@ int MusicExtractor::compute(const string& audioFilename){
                                     "sampleRate", analysisSampleRate,
                                     "startTime",  startTime,
                                     "endTime",    endTime,
-                                    "replayGain", replayGain,
+                                    "replayGain", -6,//replayGain,
                                     "downmix",    downmix);
 
   MusicLowlevelDescriptors *lowlevel = new MusicLowlevelDescriptors(options);
@@ -87,7 +87,6 @@ int MusicExtractor::compute(const string& audioFilename){
 
   Network network(loader,false);
   network.run();
-
 
   // Descriptors that require values from other descriptors in the previous chain
   lowlevel->computeAverageLoudness(results);  // requires 'loudness'

@@ -27,7 +27,8 @@ using namespace streaming;
 const string MusicRhythmDescriptors::nameSpace="rhythm."; 
 
 void  MusicRhythmDescriptors::createNetwork(SourceBase& source, Pool& pool){
-  
+  Real sampleRate = options.value<Real>("analysisSampleRate");
+
   AlgorithmFactory& factory = AlgorithmFactory::instance();
 
   // Rhythm extractor
@@ -67,7 +68,8 @@ void  MusicRhythmDescriptors::createNetwork(SourceBase& source, Pool& pool){
   onset->output("onsetRate")  >> PC(pool, nameSpace + "onset_rate");
 
   // Danceability
-  Algorithm* danceability = factory.create("Danceability");
+  Algorithm* danceability = factory.create("Danceability",
+                                           "sampleRate",sampleRate);
   source                                >> danceability->input("signal");
   danceability->output("danceability")  >> PC(pool, nameSpace + "danceability");
 

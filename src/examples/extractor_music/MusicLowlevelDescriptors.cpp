@@ -49,6 +49,11 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   fc->output("frame") >> w->input("frame");
   w->output("frame")  >> spec->input("frame");
 
+  source >> PC(pool, nameSpace + "audio");
+  fc->output("frame") >> PC(pool, nameSpace + "frames");
+  w->output("frame") >> PC(pool, nameSpace + "windows");
+  spec->output("spectrum") >> PC(pool, nameSpace + "spectrum");
+
   // Silence Rate
   Real thresholds_dB[] = { -20, -30, -60 };
   vector<Real> thresholds(ARRAY_SIZE(thresholds_dB));
@@ -68,7 +73,7 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
 
   // MelBands and MFCC
   int nMelBands = 40;
-  Algorithm* mfcc = factory.create("MFCC", "numberBands", nMelBands);
+  Algorithm* mfcc = factory.create("MFCC", "numberBands", nMelBands, "sampleRate", sampleRate);
   spec->output("spectrum")  >> mfcc->input("spectrum");
   mfcc->output("bands")     >> PC(pool, nameSpace + "melbands");
   mfcc->output("mfcc")      >> PC(pool, nameSpace + "mfcc");
@@ -180,7 +185,9 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   ebr_hi->output("energyBand")      >> PC(pool, nameSpace + "spectral_energyband_high");
 
   // Spectral HFC
-  Algorithm* hfc = factory.create("HFC");
+  Algorithm* hfc = factory.create("HFC",
+                                  "sampleRate", sampleRate,
+                                  "type","Masri");
   spec->output("spectrum")  >> hfc->input("spectrum");
   hfc->output("hfc")        >> PC(pool, nameSpace + "hfc");
 
