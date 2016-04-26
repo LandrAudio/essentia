@@ -209,12 +209,15 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   sp->output("strongPeak") >> PC(pool, nameSpace + "spectral_strongpeak");
 
   // Spectral Complexity
-  Algorithm* tc = factory.create("SpectralComplexity", "magnitudeThreshold", 0.005);
+  Algorithm* tc = factory.create("SpectralComplexity",
+                                 "magnitudeThreshold", 0.005,
+                                 "sampleRate",sampleRate);
   spec->output("spectrum")          >> tc->input("spectrum");
   tc->output("spectralComplexity")  >> PC(pool, nameSpace + "spectral_complexity");
 
   // Pitch Salience
-  Algorithm* ps = factory.create("PitchSalience");
+  Algorithm* ps = factory.create("PitchSalience",
+                                 "sampleRate", sampleRate);
   spec->output("spectrum")    >> ps->input("spectrum");
   ps->output("pitchSalience") >> PC(pool, nameSpace + "pitch_salience");
 

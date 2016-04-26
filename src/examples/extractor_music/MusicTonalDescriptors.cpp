@@ -26,6 +26,7 @@ const string MusicTonalDescriptors::nameSpace="tonal.";
 
 void MusicTonalDescriptors::createNetworkTuningFrequency(SourceBase& source, Pool& pool){
 
+  Real sampleRate = options.value<Real>("analysisSampleRate");
   int frameSize = int(options.value<Real>("tonal.frameSize"));
   int hopSize =   int(options.value<Real>("tonal.hopSize"));
   string silentFrames = options.value<string>("tonal.silentFrames");
@@ -43,6 +44,7 @@ void MusicTonalDescriptors::createNetworkTuningFrequency(SourceBase& source, Poo
                                      "zeroPadding", zeroPadding);
   Algorithm* spec   = factory.create("Spectrum");
   Algorithm* peaks  = factory.create("SpectralPeaks",
+                                     "sampleRate", sampleRate,
                                      "maxPeaks", 10000,
                                      "magnitudeThreshold", 0.00001,
                                      "minFrequency", 40,
