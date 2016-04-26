@@ -97,7 +97,10 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
 
   // ERBBands and GFCC
   uint nERBBands = 40;
-  Algorithm* gfcc = factory.create("GFCC", "numberBands", nERBBands);
+  Algorithm* gfcc = factory.create("GFCC",
+                                   "numberBands", nERBBands,
+                                   "sampleRate", sampleRate,
+                                   "highFrequencyBound", sampleRate/2.0);
   spec->output("spectrum")  >> gfcc->input("spectrum");
   gfcc->output("bands")     >> PC(pool, nameSpace + "erbbands");
   gfcc->output("gfcc")      >> PC(pool, nameSpace + "gfcc");
@@ -120,7 +123,9 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
 
   // BarkBands
   int nBarkBands = 27;
-  Algorithm* barkBands = factory.create("BarkBands", "numberBands", nBarkBands);
+  Algorithm* barkBands = factory.create("BarkBands",
+                                        "numberBands", nBarkBands,
+                                        "sampleRate", sampleRate);
   spec->output("spectrum")    >> barkBands->input("spectrum");
   barkBands->output("bands")  >> PC(pool, nameSpace + "barkbands");
 
@@ -148,7 +153,9 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   decrease->output("decrease")  >> PC(pool, nameSpace + "spectral_decrease");
 
   // Spectral Roll Off
-  Algorithm* ro = factory.create("RollOff");
+  Algorithm* ro = factory.create("RollOff",
+                                 "sampleRate", sampleRate);
+
   spec->output("spectrum")  >> ro->input("spectrum");
   ro->output("rollOff")     >> PC(pool, nameSpace + "spectral_rolloff");
 
