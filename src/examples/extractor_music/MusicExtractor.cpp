@@ -96,7 +96,7 @@ int MusicExtractor::compute(const string& audioFilename){
                                        "sampleRate", analysisSampleRate,
                                        "startTime",  startTime,
                                        "endTime",    endTime,
-                                       "replayGain", replayGain,
+                                       "replayGain", -6,//replayGain,
                                        "downmix",    downmix);
 
   SourceBase& source_2 = loader_2->output("audio");

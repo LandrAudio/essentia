@@ -64,6 +64,7 @@ void MusicTonalDescriptors::createNetworkTuningFrequency(SourceBase& source, Poo
 
 void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
 
+  Real sampleRate = options.value<Real>("analysisSampleRate");
   int frameSize = int(options.value<Real>("tonal.frameSize"));
   int hopSize =   int(options.value<Real>("tonal.hopSize"));
   string silentFrames = options.value<string>("tonal.silentFrames");
