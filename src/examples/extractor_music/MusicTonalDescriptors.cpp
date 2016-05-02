@@ -84,6 +84,7 @@ void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
                                 "zeroPadding", zeroPadding);
   Algorithm* spec = factory.create("Spectrum");
   Algorithm* peaks = factory.create("SpectralPeaks",
+                                    "sampleRate", sampleRate,
                                     "maxPeaks", 10000,
                                     "magnitudeThreshold", 0.00001,
                                     "minFrequency", 40,
