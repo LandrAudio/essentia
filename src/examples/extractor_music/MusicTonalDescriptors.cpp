@@ -126,7 +126,10 @@ void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
                                          "weightType", "cosine",
                                          "nonLinear", true,
                                          "windowSize", 0.5);
-  Algorithm* schord = factory.create("ChordsDetection");
+  Algorithm* schord = factory.create("ChordsDetection",
+                                     "sampleRate", sampleRate,
+                                     "windowSize", 2,
+                                     "hopSize", 2048);
   Algorithm* schords_desc = factory.create("ChordsDescriptors");
 
 
