@@ -271,6 +271,14 @@ void MusicLowlevelDescriptors::createNetworkEqLoud(SourceBase& source, Pool& poo
   string silentFrames = options.value<string>("lowlevel.silentFrames");
   string windowType = options.value<string>("lowlevel.windowType");
 
+//  std::cout << "************ binary eql pre **************" << std::endl;
+//  std::cout << "sampleRate: " << sampleRate << std::endl;
+//  std::cout << "frameSize: " << frameSize << std::endl;
+//  std::cout << "hopSize: " << hopSize << std::endl;
+//  std::cout << "zeroPadding: " << zeroPadding << std::endl;
+//  std::cout << "silentFrames: " << silentFrames << std::endl;
+//  std::cout << "windowType: " << windowType << std::endl;
+
   AlgorithmFactory& factory = AlgorithmFactory::instance();
 
   Algorithm* eqloud = factory.create("EqualLoudness",
@@ -297,7 +305,8 @@ void MusicLowlevelDescriptors::createNetworkEqLoud(SourceBase& source, Pool& poo
   centroid->output("centroid")  >> PC(pool, nameSpace + "spectral_centroid");
 
   // Spectral Central Moments Statistics
-  Algorithm* cm = factory.create("CentralMoments", "range", sampleRate * 0.5);
+  Algorithm* cm = factory.create("CentralMoments", "range", sampleRate * 0.5,
+                                "mode", "sample");
   Algorithm* ds = factory.create("DistributionShape");
   spec->output("spectrum")      >> cm->input("array");
   cm->output("centralMoments")  >> ds->input("centralMoments");
@@ -331,6 +340,17 @@ void MusicLowlevelDescriptors::createNetworkEqLoud(SourceBase& source, Pool& poo
   spec->output("spectrum")        >> sc->input("spectrum");
   sc->output("spectralContrast")  >> PC(pool, nameSpace + "spectral_contrast_coeffs");
   sc->output("spectralValley")    >> PC(pool, nameSpace + "spectral_contrast_valleys");
+
+  // Debug (to delete at merge into dev!)
+//  eqloud->output("signal")  >> PC(pool, nameSpace + "eqlloudness");
+//  fc->output("frame")  >> PC(pool, nameSpace + "fcframe");
+//  w->output("frame")  >> PC(pool, nameSpace + "wframe");
+//  spec->output("spectrum")  >> PC(pool, nameSpace + "spectrumeql");
+//  peaks->output("frequencies")   >> PC(pool, nameSpace + "spectralPeaksFreqs");
+//  peaks->output("magnitudes")   >> PC(pool, nameSpace + "spectralPeaksMags");
+//  square->output("array")   >> PC(pool, nameSpace + "unary");
+
+//  std::cout << "************ binary eql post **************" << std::endl;
 }
 
 
