@@ -101,6 +101,7 @@ int MusicExtractor::compute(const string& audioFilename){
 
   SourceBase& source_2 = loader_2->output("audio");
   rhythm->createNetworkBeatsLoudness(source_2, results);  // requires 'beat_positions'
+  cerr << "Tonal Network" << endl;
   tonal->createNetwork(source_2, results);                // requires 'tuning frequency'
 
   Network network_2(loader_2);
