@@ -49,6 +49,7 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   fc->output("frame") >> w->input("frame");
   w->output("frame")  >> spec->input("frame");
 
+  //  Debug stuff
   source >> PC(pool, nameSpace + "audio");
   fc->output("frame") >> PC(pool, nameSpace + "frames");
   w->output("frame") >> PC(pool, nameSpace + "windows");
