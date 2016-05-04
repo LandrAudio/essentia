@@ -39,7 +39,9 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   Algorithm* fc = factory.create("FrameCutter",
                                  "frameSize", frameSize,
                                  "hopSize", hopSize,
-                                 "silentFrames", silentFrames);
+                                 "silentFrames", silentFrames,
+                                 "startFromZero",false,
+                                 "validFrameThresholdRatio",0.0);
   Algorithm* w = factory.create("Windowing",
                                 "type", windowType,
                                 "zeroPadding", zeroPadding);
@@ -49,11 +51,10 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   fc->output("frame") >> w->input("frame");
   w->output("frame")  >> spec->input("frame");
 
-  //  Debug stuff
-  source >> PC(pool, nameSpace + "audio");
-  fc->output("frame") >> PC(pool, nameSpace + "frames");
-  w->output("frame") >> PC(pool, nameSpace + "windows");
-  spec->output("spectrum") >> PC(pool, nameSpace + "spectrum");
+//  source >> PC(pool, nameSpace + "audio");
+//  fc->output("frame") >> PC(pool, nameSpace + "frames");
+//  w->output("frame") >> PC(pool, nameSpace + "windows");
+//  spec->output("spectrum") >> PC(pool, nameSpace + "spectrum");
 
   // Silence Rate
   Real thresholds_dB[] = { -20, -30, -60 };
@@ -101,7 +102,9 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   Algorithm* gfcc = factory.create("GFCC",
                                    "numberBands", nERBBands,
                                    "sampleRate", sampleRate,
-                                   "highFrequencyBound", sampleRate/2.0);
+                                   "highFrequencyBound", sampleRate/2.0,
+                                   "lowFrequencyBound", 40.0,
+                                   "numberCoefficients", 13);
   spec->output("spectrum")  >> gfcc->input("spectrum");
   gfcc->output("bands")     >> PC(pool, nameSpace + "erbbands");
   gfcc->output("gfcc")      >> PC(pool, nameSpace + "gfcc");

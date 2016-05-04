@@ -71,23 +71,16 @@ void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
   string windowType = options.value<string>("tonal.windowType");
   int zeroPadding = int(options.value<Real>("tonal.zeroPadding"));
 
-  cerr << "sampleRate: " << sampleRate << endl;
-  cerr << "frameSize: " << frameSize << endl;
-  cerr << "hopSize: " << hopSize << endl;
-  cerr << "silentFrames: " << silentFrames << endl;
-  cerr << "windowType: " << windowType << endl;
-  cerr << "zeroPadding: " << zeroPadding << endl;
-
   Real tuningFreq = pool.value<vector<Real> >(nameSpace + "tuning_frequency").back();
-
-  cerr << "tuning_freq: " << tuningFreq << endl;
 
   AlgorithmFactory& factory = AlgorithmFactory::instance();
 
   Algorithm* fc = factory.create("FrameCutter",
                                  "frameSize", frameSize,
                                  "hopSize", hopSize,
-                                 "silentFrames", silentFrames);
+                                 "silentFrames", silentFrames,
+                                 "startFromZero", false,
+                                 "validFrameThresholdRatio", 0.0);
   Algorithm* w = factory.create("Windowing",
                                 "type", windowType,
                                 "zeroPadding", zeroPadding);
@@ -138,6 +131,14 @@ void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
   w->output("frame")           >> spec->input("frame");
   spec->output("spectrum")     >> peaks->input("spectrum");
 
+  // Debug
+  source >> PC(pool, nameSpace + "audio");
+  fc->output("frame") >> PC(pool, nameSpace + "frames");
+  w->output("frame") >> PC(pool, nameSpace + "windows");
+  spec->output("spectrum") >> PC(pool, nameSpace + "spectrum");
+  peaks->output("frequencies") >> PC(pool, nameSpace + "frequencies");
+  peaks->output("magnitudes") >> PC(pool, nameSpace + "magnitudes");
+
   peaks->output("frequencies") >> hpcp_key->input("frequencies");
   peaks->output("magnitudes")  >> hpcp_key->input("magnitudes");
   hpcp_key->output("hpcp")     >> PC(pool, nameSpace + "hpcp");
@@ -145,13 +146,6 @@ void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
   skey->output("key")          >> PC(pool, nameSpace + "key_key");
   skey->output("scale")        >> PC(pool, nameSpace + "key_scale");
   skey->output("strength")     >> PC(pool, nameSpace + "key_strength");
-
-  // debug stuff
-  source >> PC(pool, nameSpace + "audio");
-  fc->output("frame") >> PC(pool, nameSpace + "frames");
-  spec->output("spectrum") >> PC(pool, nameSpace + "spectrum");
-  peaks->output("frequencies") >> PC(pool, nameSpace + "peak_frequencies");
-  peaks->output("magnitudes") >> PC(pool, nameSpace + "peak_magnitudes");
 
   peaks->output("frequencies") >> hpcp_chord->input("frequencies");
   peaks->output("magnitudes")  >> hpcp_chord->input("magnitudes");
