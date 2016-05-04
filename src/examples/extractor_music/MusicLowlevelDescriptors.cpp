@@ -318,6 +318,11 @@ void MusicLowlevelDescriptors::createNetworkEqLoud(SourceBase& source, Pool& poo
   ds->output("spread")          >> PC(pool, nameSpace + "spectral_spread");
   ds->output("skewness")        >> PC(pool, nameSpace + "spectral_skewness");
 
+  ds->output("kurtosis")  >> PC(pool, nameSpace + "spectral_kurtosis");
+  ds->output("spread")  >> PC(pool, nameSpace + "spectral_spread");
+  ds->output("skewness")  >> PC(pool, nameSpace + "spectral_skewness");
+
+
   // Spectral Dissonance
   Algorithm* peaks = factory.create("SpectralPeaks", "orderBy", "frequency");
   Algorithm* diss = factory.create("Dissonance");
