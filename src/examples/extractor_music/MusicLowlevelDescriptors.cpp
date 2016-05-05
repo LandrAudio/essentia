@@ -309,8 +309,7 @@ void MusicLowlevelDescriptors::createNetworkEqLoud(SourceBase& source, Pool& poo
   centroid->output("centroid")  >> PC(pool, nameSpace + "spectral_centroid");
 
   // Spectral Central Moments Statistics
-  Algorithm* cm = factory.create("CentralMoments",
-                                "mode", "sample");
+  Algorithm* cm = factory.create("CentralMoments");
   Algorithm* ds = factory.create("DistributionShape");
   spec->output("spectrum")      >> cm->input("array");
 
