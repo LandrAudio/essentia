@@ -303,7 +303,7 @@ void MusicLowlevelDescriptors::createNetworkEqLoud(SourceBase& source, Pool& poo
 
   // Spectral Centroid
   Algorithm* square = factory.create("UnaryOperator", "type", "square");
-  Algorithm* centroid = factory.create("Centroid", "range", sampleRate * 0.5);
+  Algorithm* centroid = factory.create("Centroid");
   spec->output("spectrum")      >> square->input("array");
   square->output("array")       >> centroid->input("array");
   centroid->output("centroid")  >> PC(pool, nameSpace + "spectral_centroid");
