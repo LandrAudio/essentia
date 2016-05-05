@@ -313,15 +313,12 @@ void MusicLowlevelDescriptors::createNetworkEqLoud(SourceBase& source, Pool& poo
                                 "mode", "sample");
   Algorithm* ds = factory.create("DistributionShape");
   spec->output("spectrum")      >> cm->input("array");
+
+  spec->output("spectrum") >> PC(pool, nameSpace + "spectrumEql");
   cm->output("centralMoments")  >> ds->input("centralMoments");
   ds->output("kurtosis")        >> PC(pool, nameSpace + "spectral_kurtosis");
   ds->output("spread")          >> PC(pool, nameSpace + "spectral_spread");
   ds->output("skewness")        >> PC(pool, nameSpace + "spectral_skewness");
-
-  ds->output("kurtosis")  >> PC(pool, nameSpace + "spectral_kurtosis");
-  ds->output("spread")  >> PC(pool, nameSpace + "spectral_spread");
-  ds->output("skewness")  >> PC(pool, nameSpace + "spectral_skewness");
-
 
   // Spectral Dissonance
   Algorithm* peaks = factory.create("SpectralPeaks", "orderBy", "frequency");
