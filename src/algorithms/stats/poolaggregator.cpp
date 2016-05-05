@@ -38,8 +38,12 @@ const char* PoolAggregator::description = DOC("This algorithm performs statistic
   "\t'kurt' (kurtosis),\n"
   "\t'dmean' (mean of the derivative),\n"
   "\t'dvar' (variance of the derivative),\n"
+  "\t'dskew' (skewness of the derivative),\n"
+  "\t'dkurt' (kurtosis of the derivative),\n"
   "\t'dmean2' (mean of the second derivative),\n"
   "\t'dvar2' (variance of the second derivative),\n"
+  "\t'dskew2' (skewness of the second derivative),\n"
+  "\t'dkurt2' (kurtosis of the second derivative),\n"
   "\t'cov' (covariance), and\n"
   "\t'icov' (inverse covariance).\n"
   "\t'copy' (verbatim copy of descriptor, no aggregation; exclusive: cannot be performed with any other statistical units).\n"
@@ -58,7 +62,8 @@ const char* PoolAggregator::description = DOC("This algorithm performs statistic
 // initialize supported statistics set
 const char* supportedStats[] =
   {"min", "max", "median", "mean", "var", "skew", "kurt",
-   "dmean", "dvar", "dmean2", "dvar2",
+   "dmean", "dvar", "dskew", "dkurt",
+   "dmean2", "dvar2", "dskew2", "dkurt2",
    "cov", "icov",
    "copy", "value"};
 vector<string> tmp = arrayToVector<string>(supportedStats);
@@ -126,7 +131,8 @@ void PoolAggregator::aggregateRealPool(const Pool& input, Pool& output) {
       derived2[i] = derived[i+1] - derived[i];
     }
 
-    Real dmeanVal, d2meanVal, dvarianceVal, d2varianceVal;
+    Real dmeanVal, dvarianceVal, dskewnessVal, dkurtosisVal,
+         d2meanVal,  d2varianceVal, d2skewnessVal, d2kurtosisVal;
 
     // we need to perform the absolute value conversion before taking the
     // variance so that the mean and variance caclulation both use the absolute
@@ -134,9 +140,13 @@ void PoolAggregator::aggregateRealPool(const Pool& input, Pool& output) {
     for (int i=0; i<(int)derived.size(); i++) derived[i] = abs(derived[i]);
     for (int i=0; i<(int)derived2.size(); i++) derived2[i] = abs(derived2[i]);
     dmeanVal = mean(derived);
+    dvarianceVal = variance(derived, dmeanVal);
+    dskewnessVal = skewness(derived, dmeanVal);
+    dkurtosisVal = kurtosis(derived, dmeanVal);
     d2meanVal = mean(derived2);
-    dvarianceVal = variance(derived, mean(derived));
-    d2varianceVal = variance(derived2, mean(derived2));
+    d2varianceVal = variance(derived2, d2meanVal);
+    d2skewnessVal = skewness(derived2, d2meanVal);
+    d2kurtosisVal = kurtosis(derived2, d2meanVal);
 
     // figure out which computed stats to add to the output pool
     const vector<string>& stats = getStats(key);
@@ -150,8 +160,12 @@ void PoolAggregator::aggregateRealPool(const Pool& input, Pool& output) {
       else if (stats[i] == "kurt")   output.set(key + ".kurt", kurtosisVal);
       else if (stats[i] == "dmean")  output.set(key + ".dmean", dmeanVal);
       else if (stats[i] == "dvar")   output.set(key + ".dvar", dvarianceVal);
+      else if (stats[i] == "dskew")   output.set(key + ".dskew", dskewnessVal);
+      else if (stats[i] == "dkurt")   output.set(key + ".dkurt", dkurtosisVal);
       else if (stats[i] == "dmean2") output.set(key + ".dmean2", d2meanVal);
       else if (stats[i] == "dvar2")  output.set(key + ".dvar2", d2varianceVal);
+      else if (stats[i] == "dskew2")  output.set(key + ".dskew2", d2skewnessVal);
+      else if (stats[i] == "dkurt2")  output.set(key + ".dkurt2", d2kurtosisVal);
       else if (stats[i] == "copy") {
         for (int i=0; i<int(data.size()); ++i) {
           output.add(key, data[i]);
@@ -268,6 +282,10 @@ void PoolAggregator::aggregateVectorRealPool(const Pool& input, Pool& output) {
     vector<Real> d2meanVals = meanFrames(derived2);
     vector<Real> dvarVals = varianceFrames(derived);
     vector<Real> d2varVals = varianceFrames(derived2);
+    vector<Real> dskewVals = skewnessFrames(derived);
+    vector<Real> d2skewVals = skewnessFrames(derived2);
+    vector<Real> dkurtVals = kurtosisFrames(derived);
+    vector<Real> d2kurtVals = kurtosisFrames(derived2);
 
     // only compute cov and icov matrix if asked, because it could throw an
     // exception if matrix is singular...
@@ -342,11 +360,23 @@ void PoolAggregator::aggregateVectorRealPool(const Pool& input, Pool& output) {
       else if (stats[i] == "dvar")
         for (int j=0; j<int(dvarVals.size()); ++j) output.add(subkey, dvarVals[j]);
 
+      else if (stats[i] == "dskew")
+        for (int j=0; j<int(dskewVals.size()); ++j) output.add(subkey, dskewVals[j]);
+
+      else if (stats[i] == "dkurt")
+        for (int j=0; j<int(dkurtVals.size()); ++j) output.add(subkey, dkurtVals[j]);
+
       else if (stats[i] == "dmean2")
         for (int j=0; j<int(d2meanVals.size()); ++j) output.add(subkey, d2meanVals[j]);
 
       else if (stats[i] == "dvar2")
         for (int j=0; j<int(d2varVals.size()); ++j) output.add(subkey, d2varVals[j]);
+
+      else if (stats[i] == "dskew2")
+        for (int j=0; j<int(d2skewVals.size()); ++j) output.add(subkey, d2skewVals[j]);
+
+      else if (stats[i] == "dkurt2")
+        for (int j=0; j<int(d2kurtVals.size()); ++j) output.add(subkey, d2kurtVals[j]);
 
       else if (stats[i] == "cov")
         for (int j=0; j<vsize; ++j) output.add(subkey, cov[j]);
