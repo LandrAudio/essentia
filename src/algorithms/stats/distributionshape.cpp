@@ -56,5 +56,5 @@ void DistributionShape::compute() {
   else skewness = (Real)(centralMoments[3] / pow(spread, (Real)1.5));
 
   if (spread == 0.0) kurtosis = -3.0;
-  else kurtosis = (centralMoments[4] / (spread * spread)) - 3.0;
+  else kurtosis = (centralMoments[4] / (spread * spread + std::numeric_limits<Real>::epsilon())) - 3.0;
 }
