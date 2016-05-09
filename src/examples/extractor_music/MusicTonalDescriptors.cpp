@@ -58,22 +58,31 @@ void MusicTonalDescriptors::createNetworkTuningFrequency(SourceBase& source, Poo
   spec->output("spectrum")          >> peaks->input("spectrum");
   peaks->output("magnitudes")       >> tuning->input("magnitudes");
   peaks->output("frequencies")      >> tuning->input("frequencies");
-  tuning->output("tuningFrequency") >> PC(pool, nameSpace + "tuning_frequency");
+  tuning->output("tuningFrequency") >> PC(pool, nameSpace + "tuning_frequency_vector");
   tuning->output("tuningCents")     >> NOWHERE;
 }
 
 void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
 
-  Real sampleRate = options.value<Real>("analysisSampleRate");
-  int frameSize = int(options.value<Real>("tonal.frameSize"));
-  int hopSize =   int(options.value<Real>("tonal.hopSize"));
-  string silentFrames = options.value<string>("tonal.silentFrames");
-  string windowType = options.value<string>("tonal.windowType");
-  int zeroPadding = int(options.value<Real>("tonal.zeroPadding"));
+    Real sampleRate = options.value<Real>("analysisSampleRate");
+    int frameSize = int(options.value<Real>("tonal.frameSize"));
+    int hopSize =   int(options.value<Real>("tonal.hopSize"));
+    string silentFrames = options.value<string>("tonal.silentFrames");
+    string windowType = options.value<string>("tonal.windowType");
+    int zeroPadding = int(options.value<Real>("tonal.zeroPadding"));
 
-  Real tuningFreq = pool.value<vector<Real> >(nameSpace + "tuning_frequency").back();
+    vector<Real> tfv = pool.value<vector<Real> >(nameSpace + "tuning_frequency_vector");
 
-  AlgorithmFactory& factory = AlgorithmFactory::instance();
+    // Calculate the median of the tuning freq
+    essentia::standard::AlgorithmFactory& stdfactory = essentia::standard::AlgorithmFactory::instance();
+    essentia::standard::Algorithm* median = stdfactory.create("Median");
+    median->input("array").set(tfv);
+    Real tuningFreq;
+    median->output("median").set(tuningFreq);
+    median->compute();
+    pool.add("tuning_frequency_vector.median", tuningFreq);
+
+    AlgorithmFactory& factory = AlgorithmFactory::instance();
 
   Algorithm* fc = factory.create("FrameCutter",
                                  "frameSize", frameSize,
