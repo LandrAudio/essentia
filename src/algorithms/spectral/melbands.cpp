@@ -158,7 +158,8 @@ void MelBands::compute() {
     int jend = int(_filterFrequencies[i+2] / frequencyScale + 0.5);
 
     for (int j=jbegin; j<jend; ++j) {
-      bands[i] += (spectrum[j] * spectrum[j]) * _filterCoefficients[i][j];
+//      bands[i] += (spectrum[j] * spectrum[j]) * _filterCoefficients[i][j];
+      bands[i] += spectrum[j] * _filterCoefficients[i][j];
     }
   }
 }
