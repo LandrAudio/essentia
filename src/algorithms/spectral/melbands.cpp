@@ -66,6 +66,25 @@ void MelBands::calculateFilterFrequencies() {
     _filterFrequencies[i] = mel2hz(melFreq);
     melFreq += melFrequencyIncrement; // increment linearly in mel-scale
   }
+
+  cerr << "before fudge ..." << endl;
+  for (int iF=0; iF < _filterFrequencies.size(); ++iF)
+  {
+    cerr << "f[" << iF << "]: " << _filterFrequencies[iF] << endl;
+  }
+
+  float freqs[] = {100.0, 200.0, 400.0, 800.0, 1600.0, 3200.0, 6400.0, 7000.0, 8000.0, 9000.0, 10000.0, 11000.0, 12000.0, 13000.0, 14000.0, 15000.0};
+  _filterFrequencies.clear();
+  for (int i =0; i < 16; ++i)
+  {
+      _filterFrequencies.push_back(freqs[i]);
+  }
+
+  cerr << "after fudge ..." << endl;
+  for (int iF=0; iF < _filterFrequencies.size(); ++iF)
+  {
+      cerr << "f[" << iF << "]: " << _filterFrequencies[iF] << endl;
+  }
 }
 
 void MelBands::createFilters(int spectrumSize) {
@@ -98,8 +117,8 @@ void MelBands::createFilters(int spectrumSize) {
   Real frequencyScale = (parameter("sampleRate").toReal() / 2.0) / (spectrumSize - 1);
 
   for (int i=0; i<filterSize; ++i) {
-    Real fstep1 = hz2mel(_filterFrequencies[i+1]) - hz2mel(_filterFrequencies[i]);
-    Real fstep2 = hz2mel(_filterFrequencies[i+2]) - hz2mel(_filterFrequencies[i+1]);
+    Real fstep1 = _filterFrequencies[i+1] - _filterFrequencies[i];
+    Real fstep2 = _filterFrequencies[i+2] - _filterFrequencies[i+1];
 
     int jbegin = int(_filterFrequencies[i] / frequencyScale + 0.5);
     int jend = int(_filterFrequencies[i+2] / frequencyScale + 0.5);
@@ -108,13 +127,31 @@ void MelBands::createFilters(int spectrumSize) {
       Real binfreq = j*frequencyScale;
       // in the ascending part of the triangle...
       if ((binfreq >= _filterFrequencies[i]) && (binfreq < _filterFrequencies[i+1])) {
-        _filterCoefficients[i][j] = (hz2mel(binfreq) - hz2mel(_filterFrequencies[i])) / fstep1;
+        _filterCoefficients[i][j] = (binfreq - _filterFrequencies[i]) / fstep1;
       }
       // in the descending part of the triangle...
       else if ((binfreq >= _filterFrequencies[i+1]) && (binfreq < _filterFrequencies[i+2])) {
-        _filterCoefficients[i][j] = (hz2mel(_filterFrequencies[i+2]) - hz2mel(binfreq)) / fstep2;
+        _filterCoefficients[i][j] = (_filterFrequencies[i+2] - binfreq) / fstep2;
       }
     }
+
+//    Real fstep1 = hz2mel(_filterFrequencies[i+1]) - hz2mel(_filterFrequencies[i]);
+//    Real fstep2 = hz2mel(_filterFrequencies[i+2]) - hz2mel(_filterFrequencies[i+1]);
+//
+//    int jbegin = int(_filterFrequencies[i] / frequencyScale + 0.5);
+//    int jend = int(_filterFrequencies[i+2] / frequencyScale + 0.5);
+//
+//    for (int j=jbegin; j<jend; ++j) {
+//      Real binfreq = j*frequencyScale;
+//      // in the ascending part of the triangle...
+//      if ((binfreq >= _filterFrequencies[i]) && (binfreq < _filterFrequencies[i+1])) {
+//        _filterCoefficients[i][j] = (hz2mel(binfreq) - hz2mel(_filterFrequencies[i])) / fstep1;
+//      }
+//      // in the descending part of the triangle...
+//      else if ((binfreq >= _filterFrequencies[i+1]) && (binfreq < _filterFrequencies[i+2])) {
+//        _filterCoefficients[i][j] = (hz2mel(_filterFrequencies[i+2]) - hz2mel(binfreq)) / fstep2;
+//      }
+//    }
   }
 
   // normalize the filter weights
