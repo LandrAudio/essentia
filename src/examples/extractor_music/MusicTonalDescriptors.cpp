@@ -79,7 +79,7 @@ void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
   median->compute();
   pool.add("tuning_frequency", tuningFreq);
 
-AlgorithmFactory& factory = AlgorithmFactory::instance();
+  AlgorithmFactory& factory = AlgorithmFactory::instance();
 
   Algorithm* fc = factory.create("FrameCutter",
                                  "frameSize", frameSize,
