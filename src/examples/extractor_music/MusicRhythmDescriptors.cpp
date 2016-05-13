@@ -27,8 +27,7 @@ using namespace streaming;
 const string MusicRhythmDescriptors::nameSpace="rhythm."; 
 
 void  MusicRhythmDescriptors::createNetwork(SourceBase& source, Pool& pool){
-  Real sampleRate = options.value<Real>("analysisSampleRate");
-
+  
   AlgorithmFactory& factory = AlgorithmFactory::instance();
 
   // Rhythm extractor
@@ -68,8 +67,7 @@ void  MusicRhythmDescriptors::createNetwork(SourceBase& source, Pool& pool){
   onset->output("onsetRate")  >> PC(pool, nameSpace + "onset_rate");
 
   // Danceability
-  Algorithm* danceability = factory.create("Danceability",
-                                           "sampleRate",sampleRate);
+  Algorithm* danceability = factory.create("Danceability");
   source                                >> danceability->input("signal");
   danceability->output("danceability")  >> PC(pool, nameSpace + "danceability");
 
@@ -81,11 +79,9 @@ void MusicRhythmDescriptors::createNetworkBeatsLoudness(SourceBase& source, Pool
 
   AlgorithmFactory& factory = AlgorithmFactory::instance();
   vector<Real> ticks = pool.value<vector<Real> >(nameSpace + "beats_position");
-  Real defaultBands[] = { 0.0, 200.0, 400.0, 800.0, 1600.0, 3200.0, 15000.0 };
   Algorithm* beatsLoudness = factory.create("BeatsLoudness",
                                             "sampleRate", sampleRate,
-                                            "beats", ticks,
-                                            "frequencyBands", arrayToVector<Real>(defaultBands));
+                                            "beats", ticks);
   source                                      >> beatsLoudness->input("signal");
   beatsLoudness->output("loudness")           >> PC(pool, nameSpace + "beats_loudness");
   beatsLoudness->output("loudnessBandRatio")  >> PC(pool, nameSpace + "beats_loudness_band_ratio");

@@ -26,7 +26,6 @@ const string MusicTonalDescriptors::nameSpace="tonal.";
 
 void MusicTonalDescriptors::createNetworkTuningFrequency(SourceBase& source, Pool& pool){
 
-  Real sampleRate = options.value<Real>("analysisSampleRate");
   int frameSize = int(options.value<Real>("tonal.frameSize"));
   int hopSize =   int(options.value<Real>("tonal.hopSize"));
   string silentFrames = options.value<string>("tonal.silentFrames");
@@ -44,7 +43,6 @@ void MusicTonalDescriptors::createNetworkTuningFrequency(SourceBase& source, Poo
                                      "zeroPadding", zeroPadding);
   Algorithm* spec   = factory.create("Spectrum");
   Algorithm* peaks  = factory.create("SpectralPeaks",
-                                     "sampleRate", sampleRate,
                                      "maxPeaks", 10000,
                                      "magnitudeThreshold", 0.00001,
                                      "minFrequency", 40,
@@ -64,12 +62,11 @@ void MusicTonalDescriptors::createNetworkTuningFrequency(SourceBase& source, Poo
 
 void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
 
-    Real sampleRate = options.value<Real>("analysisSampleRate");
-    int frameSize = int(options.value<Real>("tonal.frameSize"));
-    int hopSize =   int(options.value<Real>("tonal.hopSize"));
-    string silentFrames = options.value<string>("tonal.silentFrames");
-    string windowType = options.value<string>("tonal.windowType");
-    int zeroPadding = int(options.value<Real>("tonal.zeroPadding"));
+  int frameSize = int(options.value<Real>("tonal.frameSize"));
+  int hopSize =   int(options.value<Real>("tonal.hopSize"));
+  string silentFrames = options.value<string>("tonal.silentFrames");
+  string windowType = options.value<string>("tonal.windowType");
+  int zeroPadding = int(options.value<Real>("tonal.zeroPadding"));
 
     vector<Real> tfv = pool.value<vector<Real> >(nameSpace + "tuning_frequency_vector");
 
@@ -80,22 +77,19 @@ void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
     Real tuningFreq;
     median->output("median").set(tuningFreq);
     median->compute();
-    pool.add("tuning_frequency_vector.median", tuningFreq);
+    pool.add("tuning_frequency", tuningFreq);
 
     AlgorithmFactory& factory = AlgorithmFactory::instance();
 
   Algorithm* fc = factory.create("FrameCutter",
                                  "frameSize", frameSize,
                                  "hopSize", hopSize,
-                                 "silentFrames", silentFrames,
-                                 "startFromZero", false,
-                                 "validFrameThresholdRatio", 0.0);
+                                 "silentFrames", silentFrames);
   Algorithm* w = factory.create("Windowing",
                                 "type", windowType,
                                 "zeroPadding", zeroPadding);
   Algorithm* spec = factory.create("Spectrum");
   Algorithm* peaks = factory.create("SpectralPeaks",
-                                    "sampleRate", sampleRate,
                                     "maxPeaks", 10000,
                                     "magnitudeThreshold", 0.00001,
                                     "minFrequency", 40,
@@ -128,10 +122,7 @@ void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
                                          "weightType", "cosine",
                                          "nonLinear", true,
                                          "windowSize", 0.5);
-  Algorithm* schord = factory.create("ChordsDetection",
-                                     "sampleRate", sampleRate,
-                                     "windowSize", 2,
-                                     "hopSize", 2048);
+  Algorithm* schord = factory.create("ChordsDetection");
   Algorithm* schords_desc = factory.create("ChordsDescriptors");
 
 
@@ -139,14 +130,6 @@ void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
   fc->output("frame")          >> w->input("frame");
   w->output("frame")           >> spec->input("frame");
   spec->output("spectrum")     >> peaks->input("spectrum");
-
-  // Debug
-  source >> PC(pool, nameSpace + "audio");
-  fc->output("frame") >> PC(pool, nameSpace + "frames");
-  w->output("frame") >> PC(pool, nameSpace + "windows");
-  spec->output("spectrum") >> PC(pool, nameSpace + "spectrum");
-  peaks->output("frequencies") >> PC(pool, nameSpace + "frequencies");
-  peaks->output("magnitudes") >> PC(pool, nameSpace + "magnitudes");
 
   peaks->output("frequencies") >> hpcp_key->input("frequencies");
   peaks->output("magnitudes")  >> hpcp_key->input("magnitudes");

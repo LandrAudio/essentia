@@ -71,7 +71,7 @@ int MusicExtractor::compute(const string& audioFilename){
                                     "sampleRate", analysisSampleRate,
                                     "startTime",  startTime,
                                     "endTime",    endTime,
-                                    "replayGain", -6,//replayGain,
+                                    "replayGain", replayGain,
                                     "downmix",    downmix);
 
   MusicLowlevelDescriptors *lowlevel = new MusicLowlevelDescriptors(options);
@@ -79,20 +79,15 @@ int MusicExtractor::compute(const string& audioFilename){
   MusicTonalDescriptors *tonal = new MusicTonalDescriptors(options);
 
   SourceBase& source = loader->output("audio");
-
-  cerr << "Lowlevel: NonEqual Loudness network" << endl;
   lowlevel->createNetworkNeqLoud(source, results);
-  cerr << "Lowlevel: Equal Loudness network" << endl;
   lowlevel->createNetworkEqLoud(source, results);
-  cerr << "Lowlevel: Loudness network" << endl;
   lowlevel->createNetworkLoudness(source, results);
-  cerr << "Rhythm network" << endl;
   rhythm->createNetwork(source, results);
-  cerr << "Tuning freq network" << endl;
   tonal->createNetworkTuningFrequency(source, results);
 
   Network network(loader,false);
   network.run();
+
 
   // Descriptors that require values from other descriptors in the previous chain
   lowlevel->computeAverageLoudness(results);  // requires 'loudness'
@@ -102,26 +97,18 @@ int MusicExtractor::compute(const string& audioFilename){
                                        "sampleRate", analysisSampleRate,
                                        "startTime",  startTime,
                                        "endTime",    endTime,
-                                       "replayGain", -6,//replayGain,
+                                       "replayGain", replayGain,
                                        "downmix",    downmix);
 
   SourceBase& source_2 = loader_2->output("audio");
-  cerr << "Rhythm Network 2" << endl;
   rhythm->createNetworkBeatsLoudness(source_2, results);  // requires 'beat_positions'
-  cerr << "Tonal Network" << endl;
   tonal->createNetwork(source_2, results);                // requires 'tuning frequency'
 
   Network network_2(loader_2);
   network_2.run();
 
   // Descriptors that require values from other descriptors in the previous chain
-  cerr << "Tuning System Network" << endl;
   tonal->computeTuningSystemFeatures(results); // requires 'hpcp_highres'
-
-  // TODO is this necessary? tuning_frequency should always have one value:
-//  Real tuningFreq = results.value<vector<Real> >(tonal->nameSpace + "tuning_frequency").back();
-//  results.remove(tonal->nameSpace + "tuning_frequency");
-//  results.set(tonal->nameSpace + "tuning_frequency", tuningFreq);
 
   cerr << "Process step: Compute aggregation"<<endl;
   this->stats = this->computeAggregation(results);

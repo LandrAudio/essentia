@@ -39,9 +39,7 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   Algorithm* fc = factory.create("FrameCutter",
                                  "frameSize", frameSize,
                                  "hopSize", hopSize,
-                                 "silentFrames", silentFrames,
-                                 "startFromZero",false,
-                                 "validFrameThresholdRatio",0.0);
+                                 "silentFrames", silentFrames);
   Algorithm* w = factory.create("Windowing",
                                 "type", windowType,
                                 "zeroPadding", zeroPadding);
@@ -50,11 +48,6 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   source              >> fc->input("signal");
   fc->output("frame") >> w->input("frame");
   w->output("frame")  >> spec->input("frame");
-
-//  source >> PC(pool, nameSpace + "audio");
-//  fc->output("frame") >> PC(pool, nameSpace + "frames");
-//  w->output("frame") >> PC(pool, nameSpace + "windows");
-//  spec->output("spectrum") >> PC(pool, nameSpace + "spectrum");
 
   // Silence Rate
   Real thresholds_dB[] = { -20, -30, -60 };
@@ -75,7 +68,7 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
 
   // MelBands and MFCC
   int nMelBands = 40;
-  Algorithm* mfcc = factory.create("MFCC", "numberBands", nMelBands, "sampleRate", sampleRate);
+  Algorithm* mfcc = factory.create("MFCC", "numberBands", nMelBands);
   spec->output("spectrum")  >> mfcc->input("spectrum");
   mfcc->output("bands")     >> PC(pool, nameSpace + "melbands");
   mfcc->output("mfcc")      >> PC(pool, nameSpace + "mfcc");
@@ -99,12 +92,7 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
 
   // ERBBands and GFCC
   uint nERBBands = 40;
-  Algorithm* gfcc = factory.create("GFCC",
-                                   "numberBands", nERBBands,
-                                   "sampleRate", sampleRate,
-                                   "highFrequencyBound", sampleRate/2.0,
-                                   "lowFrequencyBound", 40.0,
-                                   "numberCoefficients", 13);
+  Algorithm* gfcc = factory.create("GFCC", "numberBands", nERBBands);
   spec->output("spectrum")  >> gfcc->input("spectrum");
   gfcc->output("bands")     >> PC(pool, nameSpace + "erbbands");
   gfcc->output("gfcc")      >> PC(pool, nameSpace + "gfcc");
@@ -127,9 +115,7 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
 
   // BarkBands
   int nBarkBands = 27;
-  Algorithm* barkBands = factory.create("BarkBands",
-                                        "numberBands", nBarkBands,
-                                        "sampleRate", sampleRate);
+  Algorithm* barkBands = factory.create("BarkBands", "numberBands", nBarkBands);
   spec->output("spectrum")    >> barkBands->input("spectrum");
   barkBands->output("bands")  >> PC(pool, nameSpace + "barkbands");
 
@@ -157,9 +143,7 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   decrease->output("decrease")  >> PC(pool, nameSpace + "spectral_decrease");
 
   // Spectral Roll Off
-  Algorithm* ro = factory.create("RollOff",
-                                 "sampleRate", sampleRate);
-
+  Algorithm* ro = factory.create("RollOff");
   spec->output("spectrum")  >> ro->input("spectrum");
   ro->output("rollOff")     >> PC(pool, nameSpace + "spectral_rolloff");
 
@@ -196,9 +180,7 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   ebr_hi->output("energyBand")      >> PC(pool, nameSpace + "spectral_energyband_high");
 
   // Spectral HFC
-  Algorithm* hfc = factory.create("HFC",
-                                  "sampleRate", sampleRate,
-                                  "type","Masri");
+  Algorithm* hfc = factory.create("HFC");
   spec->output("spectrum")  >> hfc->input("spectrum");
   hfc->output("hfc")        >> PC(pool, nameSpace + "hfc");
 
@@ -213,15 +195,12 @@ void MusicLowlevelDescriptors::createNetworkNeqLoud(SourceBase& source, Pool& po
   sp->output("strongPeak") >> PC(pool, nameSpace + "spectral_strongpeak");
 
   // Spectral Complexity
-  Algorithm* tc = factory.create("SpectralComplexity",
-                                 "magnitudeThreshold", 0.005,
-                                 "sampleRate",sampleRate);
+  Algorithm* tc = factory.create("SpectralComplexity", "magnitudeThreshold", 0.005);
   spec->output("spectrum")          >> tc->input("spectrum");
   tc->output("spectralComplexity")  >> PC(pool, nameSpace + "spectral_complexity");
 
   // Pitch Salience
-  Algorithm* ps = factory.create("PitchSalience",
-                                 "sampleRate", sampleRate);
+  Algorithm* ps = factory.create("PitchSalience");
   spec->output("spectrum")    >> ps->input("spectrum");
   ps->output("pitchSalience") >> PC(pool, nameSpace + "pitch_salience");
 
@@ -275,14 +254,6 @@ void MusicLowlevelDescriptors::createNetworkEqLoud(SourceBase& source, Pool& poo
   string silentFrames = options.value<string>("lowlevel.silentFrames");
   string windowType = options.value<string>("lowlevel.windowType");
 
-//  std::cout << "************ binary eql pre **************" << std::endl;
-//  std::cout << "sampleRate: " << sampleRate << std::endl;
-//  std::cout << "frameSize: " << frameSize << std::endl;
-//  std::cout << "hopSize: " << hopSize << std::endl;
-//  std::cout << "zeroPadding: " << zeroPadding << std::endl;
-//  std::cout << "silentFrames: " << silentFrames << std::endl;
-//  std::cout << "windowType: " << windowType << std::endl;
-
   AlgorithmFactory& factory = AlgorithmFactory::instance();
 
   Algorithm* eqloud = factory.create("EqualLoudness",
@@ -303,17 +274,15 @@ void MusicLowlevelDescriptors::createNetworkEqLoud(SourceBase& source, Pool& poo
 
   // Spectral Centroid
   Algorithm* square = factory.create("UnaryOperator", "type", "square");
-  Algorithm* centroid = factory.create("Centroid");
+  Algorithm* centroid = factory.create("Centroid", "range", sampleRate * 0.5);
   spec->output("spectrum")      >> square->input("array");
   square->output("array")       >> centroid->input("array");
   centroid->output("centroid")  >> PC(pool, nameSpace + "spectral_centroid");
 
   // Spectral Central Moments Statistics
-  Algorithm* cm = factory.create("CentralMoments");
+  Algorithm* cm = factory.create("CentralMoments", "range", sampleRate * 0.5);
   Algorithm* ds = factory.create("DistributionShape");
   spec->output("spectrum")      >> cm->input("array");
-
-  spec->output("spectrum") >> PC(pool, nameSpace + "spectrumEql");
   cm->output("centralMoments")  >> ds->input("centralMoments");
   ds->output("kurtosis")        >> PC(pool, nameSpace + "spectral_kurtosis");
   ds->output("spread")          >> PC(pool, nameSpace + "spectral_spread");
@@ -345,17 +314,6 @@ void MusicLowlevelDescriptors::createNetworkEqLoud(SourceBase& source, Pool& poo
   spec->output("spectrum")        >> sc->input("spectrum");
   sc->output("spectralContrast")  >> PC(pool, nameSpace + "spectral_contrast_coeffs");
   sc->output("spectralValley")    >> PC(pool, nameSpace + "spectral_contrast_valleys");
-
-  // Debug (to delete at merge into dev!)
-//  eqloud->output("signal")  >> PC(pool, nameSpace + "eqlloudness");
-//  fc->output("frame")  >> PC(pool, nameSpace + "fcframe");
-//  w->output("frame")  >> PC(pool, nameSpace + "wframe");
-//  spec->output("spectrum")  >> PC(pool, nameSpace + "spectrumeql");
-//  peaks->output("frequencies")   >> PC(pool, nameSpace + "spectralPeaksFreqs");
-//  peaks->output("magnitudes")   >> PC(pool, nameSpace + "spectralPeaksMags");
-//  square->output("array")   >> PC(pool, nameSpace + "unary");
-
-//  std::cout << "************ binary eql post **************" << std::endl;
 }
 
 
