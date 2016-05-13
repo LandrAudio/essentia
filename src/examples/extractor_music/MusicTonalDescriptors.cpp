@@ -70,7 +70,7 @@ void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
 
   // Calculate the median of the tuning freq
   vector<Real> tfv = pool.value<vector<Real> >(nameSpace + "tuning_frequency_vector");
-  pool.remove(nameSpace + "tuning_frequency_vector")
+    pool.remove(nameSpace + "tuning_frequency_vector");
   essentia::standard::AlgorithmFactory& stdfactory = essentia::standard::AlgorithmFactory::instance();
   essentia::standard::Algorithm* median = stdfactory.create("Median");
   median->input("array").set(tfv);
