@@ -68,18 +68,18 @@ void MusicTonalDescriptors::createNetwork(SourceBase& source, Pool& pool){
   string windowType = options.value<string>("tonal.windowType");
   int zeroPadding = int(options.value<Real>("tonal.zeroPadding"));
 
-    vector<Real> tfv = pool.value<vector<Real> >(nameSpace + "tuning_frequency_vector");
+  // Calculate the median of the tuning freq
+  vector<Real> tfv = pool.value<vector<Real> >(nameSpace + "tuning_frequency_vector");
+  pool.remove(nameSpace + "tuning_frequency_vector")
+  essentia::standard::AlgorithmFactory& stdfactory = essentia::standard::AlgorithmFactory::instance();
+  essentia::standard::Algorithm* median = stdfactory.create("Median");
+  median->input("array").set(tfv);
+  Real tuningFreq;
+  median->output("median").set(tuningFreq);
+  median->compute();
+  pool.add("tuning_frequency", tuningFreq);
 
-    // Calculate the median of the tuning freq
-    essentia::standard::AlgorithmFactory& stdfactory = essentia::standard::AlgorithmFactory::instance();
-    essentia::standard::Algorithm* median = stdfactory.create("Median");
-    median->input("array").set(tfv);
-    Real tuningFreq;
-    median->output("median").set(tuningFreq);
-    median->compute();
-    pool.add("tuning_frequency", tuningFreq);
-
-    AlgorithmFactory& factory = AlgorithmFactory::instance();
+AlgorithmFactory& factory = AlgorithmFactory::instance();
 
   Algorithm* fc = factory.create("FrameCutter",
                                  "frameSize", frameSize,
