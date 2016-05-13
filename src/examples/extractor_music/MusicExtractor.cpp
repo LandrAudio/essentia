@@ -110,12 +110,6 @@ int MusicExtractor::compute(const string& audioFilename){
   // Descriptors that require values from other descriptors in the previous chain
   tonal->computeTuningSystemFeatures(results); // requires 'hpcp_highres'
 
-  // TODO is this necessary? tuning_frequency should always have one value:
-  Real tuningFreq = results.value<vector<Real> >(tonal->nameSpace + "tuning_frequency").back();
-  results.remove(tonal->nameSpace + "tuning_frequency");
-  results.set(tonal->nameSpace + "tuning_frequency", tuningFreq);
-
-
   cerr << "Process step: Compute aggregation"<<endl;
   this->stats = this->computeAggregation(results);
 
