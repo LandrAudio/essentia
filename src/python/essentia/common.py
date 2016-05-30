@@ -345,7 +345,7 @@ class Pool:
 
         # if we haven't seen this type before, we will have to guess its type
         else:
-            if givenType in (Edt.REAL, Edt.STRING, Edt.VECTOR_REAL): goalType = givenType
+            if givenType in (Edt.REAL, Edt.STRING, Edt.VECTOR_REAL, Edt.MATRIX_REAL): goalType = givenType
 
             # some exceptions
             elif givenType == Edt.INTEGER: goalType = Edt(Edt.REAL)
@@ -353,6 +353,7 @@ class Pool:
             elif givenType == Edt.VECTOR_INTEGER: goalType = Edt(Edt.VECTOR_REAL)
             elif givenType == Edt.LIST_INTEGER: goalType = Edt(Edt.VECTOR_REAL)
             elif givenType == Edt.LIST_REAL: goalType = Edt(Edt.VECTOR_REAL)
+            # elif givenType == Edt.MATRIX_REAL: goalType = Edt(Edt.VECTOR_VECTOR_REAL)
 
             else:
                 raise TypeError('Pool.set does not support the type: '+str(givenType))

@@ -39,7 +39,7 @@ PyObject* MatrixReal::toPythonRef(TNT::Array2D<Real>* mat) {
   }
 
   if (result == NULL) {
-    throw EssentiaException("MatrixReal: dang null object");
+    throw EssentiaException("MatrixReal::toPythonRef: dang null object");
   }
 
   PyArray_BASE(result) = TO_PYTHON_PROXY(MatrixReal, mat);
@@ -58,6 +58,34 @@ void* MatrixReal::fromPythonRef(PyObject* obj) {
   // a numpy.array's data and are ALWAYS safe to delete
 
   throw EssentiaException("MatrixReal::fromPythonRef: not implemented");
+}
+
+
+PyObject* MatrixReal::toPythonCopy(const TNT::Array2D<Real> * matVec) {
+  npy_intp dims[2] = { 0, 0 };
+  dims[0] = (*matVec).dim1();
+  dims[1] = (*matVec).dim2();
+
+  PyObject* result;
+  PyArrayObject* mat = (PyArrayObject*)PyArray_SimpleNew(2, dims, PyArray_FLOAT);
+
+  if (mat == NULL) {
+    throw EssentiaException("MatrixReal::toPythonCopy: dang null object");
+  }
+
+  // w/o the following check, will crash
+  if (dims[1] != 0) {
+    for (int j=0; j<dims[0]; ++j) {
+      Real* dest = (Real*)(mat->data + j*mat->strides[0]);
+      const Real* src = &((*matVec)[j][0]);
+      fastcopy(dest, src, dims[1]);
+    }
+  }
+
+  return (PyObject*)mat;
+  // PyArray_BASE(result) = TO_PYTHON_PROXY(MatrixReal, mat);
+
+  // return result;
 }
 
 

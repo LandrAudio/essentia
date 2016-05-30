@@ -227,6 +227,7 @@ void fillYamlTree (const Pool& p, YamlNode* root) {
   FILL_YAML_TREE_MACRO(vector<string>, String);
   FILL_YAML_TREE_MACRO(vector<vector<string> >, VectorString);
 
+  FILL_YAML_TREE_MACRO(TNT::Array2D<Real>, SingleArray2DReal);
   FILL_YAML_TREE_MACRO(vector<TNT::Array2D<Real> >, Array2DReal);
   FILL_YAML_TREE_MACRO(vector<StereoSample>, StereoSample);
 
