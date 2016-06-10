@@ -88,6 +88,7 @@ typedef std::string DescriptorName;
  *         MutexLocker lockSingleReal(mutexSingleReal)
  *         MutexLocker lockSingleString(mutexSingleString)
  *         MutexLocker lockSingleVectorReal(mutexSingleVectorReal)
+ *         MutexLocker lockSingleArray2DReal(mutexSingleArray2DReal)
  *
  * To release the locks, the order should be reversed!
  *
@@ -99,6 +100,7 @@ class ESSENTIA_API Pool {
   std::map<std::string, Real> _poolSingleReal;
   std::map<std::string, std::string> _poolSingleString;
   std::map<std::string, std::vector<Real> > _poolSingleVectorReal;
+  std::map<std::string, TNT::Array2D<Real> > _poolSingleArray2DReal;
 
   // maps for vectors of values:
   PoolOf(Real) _poolReal;
@@ -122,7 +124,7 @@ class ESSENTIA_API Pool {
 
   mutable Mutex mutexReal, mutexVectorReal, mutexString, mutexVectorString,
                 mutexArray2DReal, mutexStereoSample,
-                mutexSingleReal, mutexSingleString, mutexSingleVectorReal;
+                mutexSingleReal, mutexSingleString, mutexSingleVectorReal, mutexSingleArray2DReal;
 
   /**
    * Adds @e value to the Pool under @e name
@@ -197,6 +199,9 @@ class ESSENTIA_API Pool {
   /** @copydoc set(const std::string&,const Real&i, bool) */
   void set(const std::string& name, const std::string& value, bool validityCheck=false);
 
+  /** @copydoc set(const std::string&,const Real&i, bool) */
+  void set(const std::string& name, const TNT::Array2D<Real>& value, bool validityCheck=false);
+
   /**
    * \brief Merges the current pool with the given one @e p.
    *
@@ -247,6 +252,8 @@ class ESSENTIA_API Pool {
   void mergeSingle(const std::string& name, const std::vector<Real>& value, const std::string& type="");
   /** @copydoc merge(const std::string&, const std::vector<Real>&, const std::string&)*/
   void mergeSingle(const std::string& name, const std::string& value, const std::string& type="");
+  /** @copydoc merge(const std::string&, const std::vector<Real>&, const std::string&)*/
+  void mergeSingle(const std::string& name, const TNT::Array2D<Real>& value, const std::string& type="");
 
   /**
    * Removes the descriptor name @e name from the Pool along with the data it
@@ -346,6 +353,12 @@ class ESSENTIA_API Pool {
   const std::map<std::string, std::vector<Real> >& getSingleVectorRealPool() const { return _poolSingleVectorReal; }
 
   /**
+   * @returns a std::map where the key is a descriptor name and the value is
+   *          of type vector<Real>
+   */
+  const std::map<std::string, TNT::Array2D<Real> >& getSingleArray2DRealPool() const { return _poolSingleArray2DReal; }
+
+  /**
    * Checks that no descriptor name is in two different inner pool types at
    * the same time, and throws an EssentiaException if there is
    */
@@ -384,6 +397,7 @@ inline const type& Pool::value(const std::string& name) const {                \
 
 SPECIALIZE_VALUE(Real, SingleReal);
 SPECIALIZE_VALUE(std::string, SingleString);
+SPECIALIZE_VALUE(TNT::Array2D<Real>, SingleArray2DReal);
 SPECIALIZE_VALUE(std::vector<std::string>, String);
 SPECIALIZE_VALUE(std::vector<std::vector<Real> >, VectorReal);
 SPECIALIZE_VALUE(std::vector<std::vector<std::string> >, VectorString);
@@ -474,7 +488,8 @@ MutexLocker lockArray2DReal(mutexArray2DReal);              \
 MutexLocker lockStereoSample(mutexStereoSample);            \
 MutexLocker lockSingleReal(mutexSingleReal);                \
 MutexLocker lockSingleString(mutexSingleString);            \
-MutexLocker lockSingleVectorReal(mutexSingleVectorReal);
+MutexLocker lockSingleVectorReal(mutexSingleVectorReal);    \
+MutexLocker lockSingleArray2DReal(mutexSingleArray2DReal);
 
 
 

@@ -156,6 +156,11 @@ PyObject* PyPool::keyType(PyPool* self, PyObject* obj) {
     return PyString_FromString( edtToString(VECTOR_REAL).c_str() );
   }
 
+  // search single vector real pool
+  if (p.getSingleArray2DRealPool().find(key) != p.getSingleArray2DRealPool().end()) {
+    return PyString_FromString( edtToString(MATRIX_REAL).c_str() );
+  }
+
   // search single string pool
   if (p.getSingleStringPool().find(key) != p.getSingleStringPool().end()) {
     return PyString_FromString( edtToString(STRING).c_str() );
@@ -295,6 +300,7 @@ PyObject* PyPool::set(PyPool* self, PyObject* pyArgs) {
       case REAL: SET_COPY(PyReal, Real);
       case STRING: SET_COPY(String, string);
       case VECTOR_REAL: SET_REF(VectorReal, RogueVector<Real>);
+      case MATRIX_REAL:   SET_COPY(MatrixReal, TNT::Array2D<Real>);
       default:
         ostringstream msg;
         msg << "Pool.set does not support the type: " << edtToString(tp);
@@ -498,6 +504,7 @@ PyObject* PyPool::value(PyPool* self, PyObject* pyArgs) {
     switch (tp) {
       case REAL: return PyReal::toPythonCopy(&p.value<Real>(key));
       case STRING: return String::toPythonCopy(&p.value<string>(key));
+      case MATRIX_REAL: return MatrixReal::toPythonCopy(&p.value<TNT::Array2D<Real> >(key));
       case VECTOR_REAL: {
         // this is a special case, we can't create the RogueVector that wraps
         // the Pool's underlying std::vector because it might be the case that
