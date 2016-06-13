@@ -328,7 +328,11 @@ std::vector<T> kurtosisFrames(const std::vector<std::vector<T> >& frames) {
   for (uint j=0; j<vsize; j++) {
     m2[j] /= nframes;
     m4[j] /= nframes;
-    result[j] = m4[j] / (m2[j]*m2[j] + std::numeric_limits<Real>::epsilon()) - 3;
+    result[j] = m4[j] / (m2[j]*m2[j]) - 3;
+    if (std::isnan(result[j]) || std::isinf(result[j]))
+    {
+      result[j] = 0;
+    }
   }
 
   return result;
@@ -480,12 +484,10 @@ template <typename T> T kurtosis(const std::vector<T>& array, const T mean) {
 
   m2 /= n; m4 /= n;
 
-  T result = m4 / ((m2*m2) + std::numeric_limits<Real>::epsilon()) - 3;
+  T result = m4 / (m2*m2) - 3;
   if (std::isnan(result) || std::isinf(result)) return 0;
   return result;
 }
-
-
 
 // returns the standard deviation of an array
 template <typename T> T stddev(const std::vector<T>& array, const T mean) {
