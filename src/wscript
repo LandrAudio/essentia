@@ -374,7 +374,7 @@ def build(ctx):
             target   = 'essentia',
             use      = ctx.env.USES,
             includes = ctx.env.INCLUDES,
-            cxxflags = [ '-w' ],
+            cxxflags = [ '-w', '-DSAFE_TYPE_COMPARISONS=1' ],
             install_path = '${PREFIX}/lib'
         )
 
