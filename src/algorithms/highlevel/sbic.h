@@ -38,7 +38,6 @@ class SBic : public Algorithm {
   int _inc1;
   int _inc2;
   Real _cpw;
-  int _minLength;
   Real _cp; // complexity penalty
 
  public:
@@ -56,7 +55,6 @@ class SBic : public Algorithm {
     declareParameter("size2", "second pass window size [frames]", "[1,inf)", 200);
     declareParameter("inc2", "second pass increment [frames]", "[1,inf)", 20);
     declareParameter("cpw", "complexity penalty weight", "[0,inf)", 1.5);
-    declareParameter("minLength", "minimum length of a segment [frames]. EDIT LANDR 2016: Parameter disabled!", "[1,inf)", 10);
   }
 
   void compute();

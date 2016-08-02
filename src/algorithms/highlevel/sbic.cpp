@@ -29,7 +29,7 @@ using namespace standard;
 const char* SBic::name = "SBic";
 const char* SBic::description = DOC("This descriptor segments the audio file into homogeneous portions using the Bayesian Information Criterion. The algorithm searches segments for which the feature vectors have the same probability distribution based on the implementation in [1]. The input matrix is assumed to have features along dim1 (horizontal) while frames along dim2 (vertical).\n"
 "\n"
-"The segmentation is done in three phases: coarse segmentation, fine segmentation and segment validation. The first phase uses parameters 'size1' and 'inc1' to perform BIC segmentation. The second phase uses parameters 'size2' and 'inc2' to perform a local search for segmentation around the segmentation done by the first phase. Finally, the validation phase verifies that BIC differentials at segmentation points are positive. EDIT LANDR 2016: Filtering out segments that are smaller than 'minLength' is disabled.\n"
+"The segmentation is done in three phases: coarse segmentation, fine segmentation and segment validation. The first phase uses parameters 'size1' and 'inc1' to perform BIC segmentation. The second phase uses parameters 'size2' and 'inc2' to perform a local search for segmentation around the segmentation done by the first phase. Finally, the validation phase verifies that BIC differentials at segmentation points are positive.\n"
 "\n"
 "Because this algorithm takes as input feature vectors of frames, all units are in terms of frames. For example, if a 44100Hz audio signal is segmented as [0, 99, 199] with a frame size of 1024 and a hopsize of 512, this means, in the time domain, that the audio signal is segmented at [0s, 99*512/44100s, 199*512/44100s].\n"
 "\n"
@@ -202,7 +202,6 @@ void SBic::configure() {
   _size2 = parameter("size2").toInt();
   _inc2 = parameter("inc2").toInt();
   _cpw = parameter("cpw").toReal();
-  _minLength = parameter("minLength").toInt();
 }
 
 void SBic::compute()
@@ -220,18 +219,6 @@ void SBic::compute()
 
     if (nFrames < 2) {
         throw EssentiaException("SBic: second dimension of features matrix is less than 2, unable to perform segmentation with less than 2 frames");
-    }
-
-    // We only have enough frames for one segment, put it in the array and return
-    if (nFrames <= _minLength-1)
-    {
-        segmentation.resize(2);
-        segmentation[0] = 0;
-        segmentation[1] = nFrames-1;
-        segValues.resize(2);
-        segValues[0] = 0.0;
-        segValues[1] = 0.0;
-        return;
     }
 
     _cp = 2 * nFeatures;
@@ -315,48 +302,14 @@ void SBic::compute()
 
     //////////////////////////////////
     // third pass - segment validation
-    currSeg = 0;
 
-// EDIT LANDR 2016: Removing start and end frame indices
-
-    // insert 0 at the beginning of the segments, and add the last frame's index
-    // at the end of the segments
-//    segmentation.insert(segmentation.begin(), 0);
-//    segmentation.push_back(nFrames - 1);
-//    segValues.insert(segValues.begin(), 0);
-//    segValues.push_back(0);
 
     // the whole signal was interpretted as one segment, just return
     if (segmentation.size() == 0) {
         return;
     }
 
-// EDIT LANDR 2016: Removing most of the segment validation to be done externally
-
-//  // verify that segments are above minimum-length treshold
-//  while (segmentation.size() > 1 && segmentation[1] < _minLength) {
-//    segmentation.erase(segmentation.begin() + 1);
-//  }
-//
-//  for (i=2; i<int(segmentation.size()-1); i++) {
-//    if (segmentation[i] - segmentation[i-1] < _minLength) {
-//      Real interval1 = segmentation[i-1] - segmentation[i-2];
-//      Real interval2 = segmentation[i+1] - segmentation[i];
-//
-//      // join the small segment with the smaller of its neighbors
-//      if (interval1 <= interval2) {
-//        segmentation.erase(segmentation.begin() + i-1);
-//      }
-//      else {
-//        segmentation.erase(segmentation.begin() + i);
-//      }
-//      --i;
-//    }
-//  }
-//  int segCnt = segmentation.size();
-//  if (segCnt > 2 && segmentation[segCnt-1] - segmentation[segCnt-2] < _minLength) {
-//    segmentation.erase(segmentation.end()-2);
-//  }
+    currSeg = 0;
 
     // verify delta_bic is negative between consecutive segments
     for (i=1; i<int(segmentation.size())-1; ++i)
@@ -372,11 +325,4 @@ void SBic::compute()
         }
         currSeg = int(segmentation[i] + 1);
     }
-
-    // in case the end of the file was erased:
-//    if (segmentation[segmentation.size() - 1] != nFrames - 1)
-//    {
-//        segmentation.push_back(nFrames-1);
-//        segValues.push_back(0.0);
-//    }
 }
