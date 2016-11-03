@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -26,7 +26,8 @@ using namespace standard;
 
 
 const char* PitchYin::name = "PitchYin";
-const char* PitchYin::description = DOC("This algorithm estimates the fundamental frequency from a given spectrum. It is an implementation of the Yin algorithm [1] for computations in the time domain.\n"
+const char* PitchYin::category = "Pitch";
+const char* PitchYin::description = DOC("This algorithm estimates the fundamental frequency given the frame of a monophonic music signal. It is an implementation of the Yin algorithm [1] for computations in the time domain.\n"
 "\n"
 "An exception is thrown if an empty signal is provided.\n"
 "\n"

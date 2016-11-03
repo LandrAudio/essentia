@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -26,6 +26,7 @@ using namespace standard;
 
 
 const char* SineModelSynth::name = "SineModelSynth";
+const char* SineModelSynth::category = "Synthesis";
 const char* SineModelSynth::description = DOC("This algorithm computes the sine model synthesis from sine model analysis.");
 
 void SineModelSynth::compute() {
@@ -87,12 +88,3 @@ void SineModelSynth::compute() {
 
 }
 
-
-//void SineModelSynth::initializeFFT(std::vector<std::complex<Real> >&fft, int sizeFFT)
-//{
-//  fft.resize(sizeFFT);
-//  for (int i=0; i < sizeFFT; ++i){
-//    fft[i].real(0);
-//    fft[i].imag(0);
-//  }
-//}

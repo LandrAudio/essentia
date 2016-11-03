@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -32,7 +32,7 @@ using namespace standard;
 int main(int argc, char* argv[]) {
 
   if (argc != 3) {
-    cout << "Standard_SineModel ERROR: incorrect number of arguments." << endl;
+    cout << "Standard_SineModel Error: incorrect number of arguments." << endl;
     cout << "Usage: " << argv[0] << " audio_input output_file" << endl;
     exit(1);
   }

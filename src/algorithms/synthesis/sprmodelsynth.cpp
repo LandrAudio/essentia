@@ -26,7 +26,8 @@ using namespace standard;
 
 
 const char* SprModelSynth::name = "SprModelSynth";
-const char* SprModelSynth::description = DOC("This algorithm computes the sinusoidal plus Residual model synthesis from SPS model analysis.");
+const char* SprModelSynth::category = "Synthesis";
+const char* SprModelSynth::description = DOC("This algorithm computes the sinusoidal plus residual model synthesis from SPS model analysis.");
 
 
 
@@ -45,8 +46,9 @@ void SprModelSynth::configure()
 
   _ifftSine->configure("size", _fftSize);
 
+ Real gain = 1.f/Real(_fftSize);
   _overlapAdd->configure( "frameSize", _fftSize, // uses synthesis window
-													"hopSize", _hopSize);
+													"hopSize", _hopSize ,"gain", gain);
 
 }
 

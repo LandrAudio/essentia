@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -26,7 +26,8 @@ using namespace essentia;
 using namespace standard;
 
 const char* LPC::name = "LPC";
-const char* LPC::description = DOC("This algorithm computes the Linear Predictive Coefficients of a signal and the associated Reflection coefficients.\n"
+const char* LPC::category = "Spectral";
+const char* LPC::description = DOC("This algorithm computes Linear Predictive Coefficients and associated reflection coefficients of a signal.\n"
 "\n"
 "An exception is thrown if the \"order\" provided is larger than the size of the input signal.\n"
 "\n"

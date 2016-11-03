@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -70,7 +70,7 @@ int essentia_main(string audioFilename, string outputFilename, string profileFil
     essentia::shutdown();
   }
   catch (EssentiaException& e) {
-    cout << e.what() << endl;
+    cerr << e.what() << endl;
     return 1;
   }
   return result;

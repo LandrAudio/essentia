@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -76,27 +76,25 @@ void processFrame(vector<Real>& tmpFrame, const vector<Real>& windowedFrame,
 
 }
 
-
-//namespace essentia {
 namespace standard {
 
 const char* OverlapAdd::name = "OverlapAdd";
-const char* OverlapAdd::description = DOC(
-"This algorithm returns the output of an overlap-add process of a sequence of input audio signal frames. It considers that the input audio frames are windowed audio signals. Giving the size of the frame and the hop size, overlapping and adding consecutive frames with produce a continuous signal. \n"
-".\n"
+const char* OverlapAdd::category = "Standard";
+const char* OverlapAdd::description = DOC("This algorithm returns the output of an overlap-add process for a sequence of frames of an audio signal. It considers that the input audio frames are windowed audio signals. Giving the size of the frame and the hop size, overlapping and adding consecutive frames will produce a continuous signal. A normalization gain can be passed as a parameter.\n"
 "\n"
 "Empty input signals will raise an exception.\n"
 "\n"
 "References:\n"
 "  [1] Overlap–add method - Wikipedia, the free encyclopedia,\n"
-"  http://en.wikipedia.org/wiki/Overlap-add_method\n\n"
-);
+"  http://en.wikipedia.org/wiki/Overlap-add_method");
 
 
 void OverlapAdd::configure() {
   _frameSize = parameter("frameSize").toInt();
   _hopSize = parameter("hopSize").toInt();
-  _normalizationGain = 0.5 * _hopSize / float(_frameSize);
+  _gain =  parameter("gain").toReal();
+
+  _normalizationGain = 0.5 * _hopSize * _gain ;
   _frameHistory.resize(_frameSize);
   _tmpFrame.resize(_frameSize);
 }
@@ -123,17 +121,9 @@ void OverlapAdd::compute() {
 
 namespace streaming {
 
-const char* OverlapAdd::name = "OverlapAdd";
-const char* OverlapAdd::description = DOC(
-"This algorithm returns the output of an overlap-add process of a sequence of input audio signal frames. It considers that the input audio frames are windowed audio signals. Giving the size of the frame and the hop size, overlapping and adding consecutive frames with produce a continuous signal. \n"
-".\n"
-"\n"
-"Empty input signals will raise an exception.\n"
-"\n"
-"References:\n"
-"  [1] Overlap-Add - Wikipedia, the free encyclopedia,\n"
-"  http://en.wikipedia.org/wiki/Overlap-Add\n\n"
-);
+const char* OverlapAdd::name = essentia::standard::OverlapAdd::name;
+const char* OverlapAdd::category = essentia::standard::OverlapAdd::category;
+const char* OverlapAdd::description = essentia::standard::OverlapAdd::description;
 
 
 void OverlapAdd::reset() {
@@ -148,7 +138,8 @@ void OverlapAdd::reset() {
 void OverlapAdd::configure() {
   _frameSize = parameter("frameSize").toInt();
   _hopSize = parameter("hopSize").toInt();
-  _normalizationGain = 0.5 * _hopSize / float(_frameSize);
+
+  _normalizationGain =  0.5 * _hopSize * parameter("gain").toReal();
   _frameHistory.resize(_frameSize);
   _tmpFrame.resize(_frameSize);
   reset();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -23,7 +23,8 @@ using namespace essentia;
 using namespace standard;
 
 const char* Centroid::name = "Centroid";
-const char* Centroid::description = DOC("This algorithm extracts the centroid, normalized to a specified range, of the input array [1]. In particular, it can be used to compute spectral centroid or temporal centroid.\n"
+const char* Centroid::category = "Statistics";
+const char* Centroid::description = DOC("This algorithm computes the centroid of an array. The centroid is normalized to a specified range. This algorithm can be used to compute spectral centroid or temporal centroid.\n"
 "\n"
 "The spectral centroid is a measure that indicates where the \"center of mass\" of the spectrum is. Perceptually, it has a robust connection with the impression of \"brightness\" of a sound, and therefore is used to characterise musical timbre. It is calculated as the weighted mean of the frequencies present in the signal, with their magnitudes as the weights.\n"
 "\n"
