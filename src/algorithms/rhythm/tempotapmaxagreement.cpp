@@ -24,9 +24,6 @@ using namespace std;
 using namespace essentia;
 using namespace standard;
 
-const Real TempoTapMaxAgreement::_phaseThreshold = 0.175;
-const Real TempoTapMaxAgreement::_periodThreshold = 0.175;
-const Real TempoTapMaxAgreement::_minTickTime = 5.;
 const int TempoTapMaxAgreement::_numberBins = 40;
 
 const char* TempoTapMaxAgreement::name = "TempoTapMaxAgreement";

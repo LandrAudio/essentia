@@ -103,6 +103,20 @@ class ESSENTIA_API EssentiaException : public std::exception {
 
 };
 
+class ESSENTIA_API TestToneException : public EssentiaException {
+        
+    public:
+        TestToneException(const char* msg) : EssentiaException(msg), _msg(msg) {}
+        TestToneException(const std::string& msg) : EssentiaException(msg), _msg(msg) {}
+        TestToneException(const std::ostringstream& msg) : EssentiaException(msg), _msg(msg.str()) {}
+    
+        virtual ~TestToneException() throw() {}
+        virtual const char* what() const throw() { return _msg.c_str(); }
+        
+    protected:
+        std::string _msg;
+        
+};
 
 /**
  * Case-insensitive compare function for characters.
