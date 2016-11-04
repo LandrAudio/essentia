@@ -162,7 +162,7 @@ Array2D<Real> SingleGaussian::inverseMatrix(const Array2D<Real>& matrix) const {
 
   LU<double> solver(matrixDouble);
   if (!solver.isNonsingular()) {
-    throw EssentiaException("SingleGaussian: Cannot solve linear system because matrix is singular");
+    throw TestToneException("SingleGaussian: Cannot solve linear system because matrix is singular");
   }
 
   int dim = matrixDouble.dim1();
