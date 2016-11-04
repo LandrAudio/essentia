@@ -151,7 +151,7 @@ Array2D<Real> SingleGaussian::covarianceMatrix(const Array2D<Real>& matrix, bool
 
 Array2D<Real> SingleGaussian::inverseMatrix(const Array2D<Real>& matrix) const {
   if (matrix.dim1() != matrix.dim2()) {
-    throw TestToneException("SingleGaussian: Cannot solve linear system because matrix is not a square matrix");
+    throw EssentiaException("SingleGaussian: Cannot solve linear system because matrix is not a square matrix");
   }
 
   // make a copy to ensure that the computation of the inverse matrix is done with double precission
@@ -188,10 +188,10 @@ void SingleGaussian::compute() {
   const Array2D<Real>& matrix = _matrix.get();
 
   if (matrix.dim1() == 0 || matrix.dim2() == 0) {
-    throw TestToneException("SingleGaussian: Cannot operate on an empty input matrix");
+    throw EssentiaException("SingleGaussian: Cannot operate on an empty input matrix");
   }
   if (matrix.dim1() == 1) {
-    throw TestToneException("SingleGaussian: Cannot operate on a matrix with one row");
+    throw EssentiaException("SingleGaussian: Cannot operate on a matrix with one row");
   }
 
   vector<Real>& mean = _mean.get();
