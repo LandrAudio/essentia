@@ -32,7 +32,6 @@ class SBic : public Algorithm {
   Input<TNT::Array2D<Real> > _features;
   Output<std::vector<Real> > _segmentation;
   Output<std::vector<Real> > _segValues;
-  Output<std::vector<Real> > _bicValues;
 
   int _size1;
   int _size2;
@@ -46,7 +45,6 @@ class SBic : public Algorithm {
     declareInput(_features, "features", "extracted features matrix (rows represent features, and columns represent frames of audio)");
     declareOutput(_segmentation, "segmentation", "a list of frame indices that indicate where a segment of audio begins/ends (the indices of the first and last frame are also added to the list at the beginning and end, respectively)");
     declareOutput(_segValues, "segmentationValues", "a list of values, one per segment, of a log measure of the change in the variance of the feature values between adjacent segments. The further below 0, the greater the change.");
-    declareOutput(_bicValues, "bicValues", "a list of values, one per frame, of a log measure of the change in the variance of the feature values between adjacent segments. The further below 0, the greater the change.");
   }
 
   ~SBic() {}
@@ -67,7 +65,7 @@ class SBic : public Algorithm {
 
  private:
   Real logDet(const TNT::Array2D<Real>& matrix) const;
-  std::pair <int, std::vector<Real> > bicChangeSearch(const TNT::Array2D<Real>& matrix, int inc, int current, Real& dmin) const;
+  int bicChangeSearch(const TNT::Array2D<Real>& matrix, int inc, int current, Real& dmin) const;
   Real delta_bic(const TNT::Array2D<Real>& matrix, Real segPoint) const;
 
 };
@@ -86,7 +84,6 @@ class SBic : public StreamingAlgorithmWrapper {
   Sink<TNT::Array2D<Real> > _features;
   Source<std::vector<Real> > _segmentation;
   Source<std::vector<Real> > _segValues;
-  Source<std::vector<Real> > _bicValues;
 
  public:
   SBic() {
@@ -94,7 +91,6 @@ class SBic : public StreamingAlgorithmWrapper {
     declareInput(_features, TOKEN, "features");
     declareOutput(_segmentation, TOKEN, "segmentation");
     declareOutput(_segValues, TOKEN, "segmentationValues");
-    declareOutput(_bicValues, TOKEN, "bicValues");
   }
 };
 

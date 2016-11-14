@@ -124,18 +124,11 @@ Real SBic::logDet(const Array2D<Real>& matrix) const {
 }
 
 // This function finds the next change in matrix
-std::pair <int, std::vector<Real> > SBic::bicChangeSearch(const Array2D<Real>& matrix, int inc, int current, Real& dmin) const {
+int SBic::bicChangeSearch(const Array2D<Real>& matrix, int inc, int current, Real& dmin) const {
   int nFeatures = matrix.dim1();
   int nFrames = matrix.dim2();
 
-    std::cout << "inc: " << inc << std::endl;
-    std::cout << "current: " << current << std::endl;
-    std::cout << "nFeatures: " << nFeatures << std::endl;
-    std::cout << "nFrames: " << nFeatures << std::endl;
-    
-  std::vector<Real> d;
-    
-  Real penalty;
+  Real d, penalty;
   Real s, s1, s2;
   Array2D<Real> half;
   int n1, n2, seg = 0, shift = inc-1;
@@ -145,8 +138,7 @@ std::pair <int, std::vector<Real> > SBic::bicChangeSearch(const Array2D<Real>& m
 
   penalty = _cpw * _cp * log(Real(nFrames));
   dmin = numeric_limits<Real>::max();
-  Real dBicValue;
-    
+
   // log-determinant for the entire window
   s = logDet(matrix);
 
@@ -162,25 +154,21 @@ std::pair <int, std::vector<Real> > SBic::bicChangeSearch(const Array2D<Real>& m
     half = subarray(matrix, 0, nFeatures-1, shift+1, nFrames-1);
     s2 = logDet(half);
 
-    dBicValue = 0.5 * (n1*s1 + n2*s2 - nFrames*s + penalty);
-    d.push_back(dBicValue);
-      
-    if (dBicValue < dmin) {
+    d = 0.5 * (n1*s1 + n2*s2 - nFrames*s + penalty);
+
+    if (d < dmin) {
       seg = shift;
-      dmin = dBicValue;
+      dmin = d;
     }
     shift += inc;
   }
 
-  std::pair <int, vector<Real> > bicChangeResult;
-  bicChangeResult.first = current + seg;
   if (dmin > 0)
   {
-    bicChangeResult.first = 0;
+    return 0;
   }
-  bicChangeResult.second = d;
 
-  return bicChangeResult;
+  return current + seg;
 }
 
 // This function computes the delta bic. It is actually used to determine
@@ -221,7 +209,6 @@ void SBic::compute()
     const Array2D<Real>& features = _features.get();
     vector<Real>& segmentation = _segmentation.get();
     vector<Real>& segValues = _segValues.get();
-    vector<Real>& bicValues = _bicValues.get();
     Array2D<Real> window;
 
     int currSeg = 0, endSeg = 0, currIdx, prevSeg, nextSeg, i;
@@ -253,15 +240,11 @@ void SBic::compute()
         window = subarray(features, 0, nFeatures-1, currSeg, endSeg);
 
         // A change has been found
-        std::pair<int, std::vector<Real> > bicChangeResult;
-        bicChangeResult = bicChangeSearch(window, _inc1, currSeg, dmin);
-        if (bicChangeResult.first)
+        if ((i = bicChangeSearch(window, _inc1, currSeg, dmin)))
         {
-            segmentation.push_back(bicChangeResult.first);
+            segmentation.push_back(i);
             segValues.push_back(dmin);
-            bicValues.insert(bicValues.end(), bicChangeResult.second.begin(), bicChangeResult.second.end());
-            
-            currSeg = (bicChangeResult.first + _inc1);
+            currSeg = (i + _inc1);
             endSeg = currSeg - 1;
         }
     }
@@ -290,19 +273,17 @@ void SBic::compute()
         window = subarray(features, 0, nFeatures-1, currSeg, endSeg);
 
         // A change has been found
-        std::pair<int, std::vector<Real> > bicChangeResult;
-        bicChangeResult = bicChangeSearch(window, _inc1, currSeg, dmin);
-        if (bicChangeResult.first)
+        if ((i = bicChangeSearch(window, _inc2, currSeg, dmin)))
         {
             prevSeg = (currIdx == 0) ? 0 : int(segmentation[currIdx-1]);
             nextSeg = (currIdx + 1 >= int(segmentation.size())) ? nFrames - 1 : int(segmentation[currIdx + 1]);
 
-            if (prevSeg <= bicChangeResult.first  &&  bicChangeResult.first <= nextSeg)
+            if (prevSeg <= i  &&  i <= nextSeg)
             {
-                if (bicChangeResult.first != int(segmentation[currIdx]))
+                if (i != int(segmentation[currIdx]))
                 {
                     // We move (refine) the segmentation
-                    segmentation[currIdx] = bicChangeResult.first;
+                    segmentation[currIdx] = i;
                     segValues[currIdx] = dmin;
                 }
             }
