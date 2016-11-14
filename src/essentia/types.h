@@ -103,6 +103,9 @@ class ESSENTIA_API EssentiaException : public std::exception {
 
 };
 
+/**
+ * Exception specifically for when a test tone (sine/saw/square wave) has been detected
+ */
 class ESSENTIA_API TestToneException : public EssentiaException {
         
     public:
