@@ -67,7 +67,6 @@ class SBic : public Algorithm {
   Real logDet(const TNT::Array2D<Real>& matrix) const;
   int bicChangeSearch(const TNT::Array2D<Real>& matrix, int inc, int current, Real& dmin) const;
   Real delta_bic(const TNT::Array2D<Real>& matrix, Real segPoint) const;
-
 };
 
 } // namespace standard

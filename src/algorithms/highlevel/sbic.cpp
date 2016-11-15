@@ -124,11 +124,18 @@ Real SBic::logDet(const Array2D<Real>& matrix) const {
 }
 
 // This function finds the next change in matrix
-int SBic::bicChangeSearch(const Array2D<Real>& matrix, int inc, int current, Real& dmin) const {
+std::pair <int, std::vector<Real> > SBic::bicChangeSearch(const Array2D<Real>& matrix, int inc, int current, Real& dmin) const {
   int nFeatures = matrix.dim1();
   int nFrames = matrix.dim2();
 
-  Real d, penalty;
+//    E_INFO("inc: " << inc);
+//    E_INFO("current: " << current);
+//    E_INFO("nFeatures: " << nFeatures);
+//    E_INFO("nFrames: " << nFrames);
+    
+  std::vector<Real> d;
+    
+  Real penalty;
   Real s, s1, s2;
   Array2D<Real> half;
   int n1, n2, seg = 0, shift = inc-1;
@@ -138,7 +145,8 @@ int SBic::bicChangeSearch(const Array2D<Real>& matrix, int inc, int current, Rea
 
   penalty = _cpw * _cp * log(Real(nFrames));
   dmin = numeric_limits<Real>::max();
-
+  Real dBicValue;
+    
   // log-determinant for the entire window
   s = logDet(matrix);
 
@@ -154,21 +162,25 @@ int SBic::bicChangeSearch(const Array2D<Real>& matrix, int inc, int current, Rea
     half = subarray(matrix, 0, nFeatures-1, shift+1, nFrames-1);
     s2 = logDet(half);
 
-    d = 0.5 * (n1*s1 + n2*s2 - nFrames*s + penalty);
-
-    if (d < dmin) {
+    dBicValue = 0.5 * (n1*s1 + n2*s2 - nFrames*s + penalty);
+    d.push_back(dBicValue);
+      
+    if (dBicValue < dmin) {
       seg = shift;
-      dmin = d;
+      dmin = dBicValue;
     }
     shift += inc;
   }
 
+  std::pair <int, vector<Real> > bicChangeResult;
+  bicChangeResult.first = current + seg;
   if (dmin > 0)
   {
-    return 0;
+    bicChangeResult.first = 0;
   }
+  bicChangeResult.second = d;
 
-  return current + seg;
+  return bicChangeResult;
 }
 
 // This function computes the delta bic. It is actually used to determine
@@ -209,6 +221,7 @@ void SBic::compute()
     const Array2D<Real>& features = _features.get();
     vector<Real>& segmentation = _segmentation.get();
     vector<Real>& segValues = _segValues.get();
+    vector<Real>& bicValues = _bicValues.get();
     Array2D<Real> window;
 
     int currSeg = 0, endSeg = 0, currIdx, prevSeg, nextSeg, i;
@@ -225,10 +238,14 @@ void SBic::compute()
 
     ///////////////////////////////////
     // first pass - coarse segmentation
-
+    
+    E_INFO("First pass");
+    
     endSeg = -1; // so the very first pass becomes _size1 - 1
 
     Real dmin;
+    int offset;
+    int prevCurrSeg;
     while (endSeg < nFrames-1)
     {
         endSeg += _size1;
@@ -237,21 +254,57 @@ void SBic::compute()
             endSeg = nFrames-1;
         }
 
+        E_INFO(" ");
+        E_INFO("currSeg : " << currSeg << " / endSeg: " <<  endSeg);
         window = subarray(features, 0, nFeatures-1, currSeg, endSeg);
 
         // A change has been found
-        if ((i = bicChangeSearch(window, _inc1, currSeg, dmin)))
+        std::pair<int, std::vector<Real> > bicChangeResult;
+        bicChangeResult = bicChangeSearch(window, _inc1, currSeg, dmin);
+        i = bicChangeResult.first;
+        std::vector<Real> tmpBicValues(bicChangeResult.second);
+        E_INFO("tmpBicValues.size() : " << tmpBicValues.size());
+        
+        
+        if (i)
         {
+            E_INFO("Found peak at : " << i);
+            prevCurrSeg = currSeg;
             segmentation.push_back(i);
             segValues.push_back(dmin);
             currSeg = (i + _inc1);
             endSeg = currSeg - 1;
+            
+            int nToAdd = i - prevCurrSeg + 1;
+            
+            // Store bic values up to (and including) the peak
+            for (int j=0; j < nToAdd; ++j)
+            {
+                bicValues.push_back(tmpBicValues[j]);
+            }
+            E_INFO("size of bicValues: " << bicValues.size());
+            E_INFO("number of values added: " << nToAdd);
+        }
+        
+        if (endSeg == nFrames-1)
+        {
+            E_INFO("Storing end of bic values");
+            for (int j=0; j < tmpBicValues.size(); ++j)
+            {
+                bicValues.push_back(tmpBicValues[j+currSeg]);
+            }
         }
     }
-
+    
+    E_INFO("nPeaks: " << segmentation.size());
+    E_INFO("nFrames: " << nFrames);
+    E_INFO("size of bicValues: " << bicValues.size());
+    
     //////////////////////////////////
     // second pass - fine segmentation
-
+    
+    E_INFO("Second pass");
+    
     currSeg = currIdx = prevSeg = nextSeg = 0;
     int halfSize = _size2 / 2;
 
@@ -273,7 +326,9 @@ void SBic::compute()
         window = subarray(features, 0, nFeatures-1, currSeg, endSeg);
 
         // A change has been found
-        if ((i = bicChangeSearch(window, _inc2, currSeg, dmin)))
+        std::pair<int, std::vector<Real> > bicChangeResult;
+        bicChangeResult = bicChangeSearch(window, _inc1, currSeg, dmin);
+        if (i)
         {
             prevSeg = (currIdx == 0) ? 0 : int(segmentation[currIdx-1]);
             nextSeg = (currIdx + 1 >= int(segmentation.size())) ? nFrames - 1 : int(segmentation[currIdx + 1]);
@@ -282,6 +337,8 @@ void SBic::compute()
             {
                 if (i != int(segmentation[currIdx]))
                 {
+                    E_INFO("Refined peak");
+                    
                     // We move (refine) the segmentation
                     segmentation[currIdx] = i;
                     segValues[currIdx] = dmin;
@@ -300,10 +357,13 @@ void SBic::compute()
         }
     }
 
+    E_INFO("nPeaks: " << segmentation.size());
+    
     //////////////////////////////////
     // third pass - segment validation
 
-
+    E_INFO("Segment validation");
+    
     // the whole signal was interpretted as one segment, just return
     if (segmentation.size() == 0) {
         return;
@@ -325,4 +385,5 @@ void SBic::compute()
         }
         currSeg = int(segmentation[i] + 1);
     }
+    E_INFO("nPeaks: " << segmentation.size());
 }
