@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -28,6 +28,7 @@ namespace essentia {
 namespace standard {
 
 const char* FrameCutter::name = "FrameCutter";
+const char* FrameCutter::category = "Standard";
 const char* FrameCutter::description = DOC("Given an input buffer this algorithm will return a "
 "frame (slice) of constant size every time it is called, and then jump a constant amount of "
 "samples in the future.\n"

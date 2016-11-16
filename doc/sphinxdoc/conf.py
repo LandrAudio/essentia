@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+# Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
 #
 # This file is part of Essentia
 #
@@ -61,7 +61,7 @@ master_doc = 'contents'
 
 # General information about the project.
 project = u'Essentia'
-copyright = u'2006-2013, Universitat Pompeu Fabra'
+copyright = u'2006-2016, Universitat Pompeu Fabra'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -156,14 +156,13 @@ html_static_path = ['_static']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = { 'index': [ 'indexsidebar.html', 'searchbox.html' ] } 
+#html_sidebars = { 'index': [ 'indexsidebar.html', 'searchbox.html' ] }
 #html_sidebars = { '**': [] } # disable sidebar on all pages
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
 html_additional_pages = { 'index': 'index.html',
-                          'algorithms_reference': 'algorithms_reference.html',
-                          }
+                          'algorithms_reference': 'algorithms_reference.html' }
 
 execfile('essentia_reference.py')
 html_additional_pages.update(essentia_algorithms)

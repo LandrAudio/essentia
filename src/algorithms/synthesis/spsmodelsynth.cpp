@@ -26,6 +26,7 @@ using namespace standard;
 
 
 const char* SpsModelSynth::name = "SpsModelSynth";
+const char* SpsModelSynth::category = "Synthesis";
 const char* SpsModelSynth::description = DOC("This algorithm computes the sinusoidal plus stochastic model synthesis from SPS model analysis.");
 
 
@@ -49,8 +50,9 @@ void SpsModelSynth::configure()
 
   _ifftSine->configure("size", _fftSize);
 
+  Real gain = 1.f/Real(_fftSize);
   _overlapAdd->configure( "frameSize", _fftSize, // uses synthesis window
-													"hopSize", _hopSize);
+													"hopSize", _hopSize,"gain", gain);
 
 }
 

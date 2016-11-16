@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -44,6 +44,10 @@ set<Algorithm*> visibleDependencies(const Algorithm* algo) {
     if (output->second->isProxied()) continue;
 
     vector<SinkBase*>& sinks = output->second->sinks();
+
+    if (!sinks.size()) {
+      E_WARNING("Unconnected source (" << output->first << ") in " << algo->name());
+    }
 
     // ...get the attached sinks and their parent algorithms
     for (vector<SinkBase*>::iterator it = sinks.begin(); it != sinks.end(); ++it) {

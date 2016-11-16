@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -27,7 +27,7 @@ namespace standard {
 
 class BpmHistogramDescriptors : public Algorithm {
 
- private:
+ protected:
   Input<std::vector<Real> > _bpmIntervals;
 
   Output<Real> _firstPeakBPM;
@@ -57,6 +57,7 @@ class BpmHistogramDescriptors : public Algorithm {
   void compute();
 
   static const char* name;
+  static const char* category;
   static const char* description;
 
   static const int maxBPM;

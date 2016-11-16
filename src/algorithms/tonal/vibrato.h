@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -17,8 +17,8 @@
  * version 3 along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-#ifndef ESSENTIA_VIBRATO_H
-#define ESSENTIA_VIBRATO_H
+#ifndef ESSENTIA_vibratoRATO_H
+#define ESSENTIA_vibratoRATO_H
 
 #include "algorithmfactory.h"
 
@@ -29,8 +29,8 @@ class Vibrato : public Algorithm {
 
  private:
   Input<std::vector<Real> > _pitch;
-  Output<std::vector<Real> > _vibFrequency;
-  Output<std::vector<Real> > _vibExtend;
+  Output<std::vector<Real> > _vibratoFrequency;
+  Output<std::vector<Real> > _vibratoExtend;
     
   Algorithm* frameCutter;
   Algorithm* window;
@@ -40,14 +40,16 @@ class Vibrato : public Algorithm {
  public:
   Vibrato() {
     declareInput(_pitch, "pitch", "the pitch trajectory [Hz].");
-    declareOutput(_vibFrequency, "vibratoFrequency", "estimated vibrato frquency [Hz]; zero if no vibrato was detected.");
-    declareOutput(_vibExtend, "vibratoExtend","estimated vibrato frquency [Hz]; zero if no vibrato was detected.") ;
+    declareOutput(_vibratoFrequency, "vibratoFrequency", "estimated vibrato frquency [Hz]; zero if no vibrato was detected.");
+    declareOutput(_vibratoExtend, "vibratoExtend","estimated vibrato frquency [Hz]; zero if no vibrato was detected.") ;
       
     frameCutter = AlgorithmFactory::create("FrameCutter");
     window = AlgorithmFactory::create("Windowing");
     spectrum = AlgorithmFactory::create("Spectrum");
     spectralPeaks = AlgorithmFactory::create("SpectralPeaks");
   }
+
+  ~Vibrato();
 
   void declareParameters() {
     declareParameter("minFrequency", "minimum considered vibrato frequency [Hz]", "(0,inf)", 4.0);
@@ -59,8 +61,10 @@ class Vibrato : public Algorithm {
 
   void compute();
   void configure();
+  void reset();
 
   static const char* name;
+  static const char* category;
   static const char* description;
 
  protected:
@@ -87,19 +91,19 @@ class Vibrato : public StreamingAlgorithmWrapper {
 
  protected:
   Sink<std::vector<Real> > _pitch;
-  Source<std::vector<Real> > _vibFrequency;
-  Source<std::vector<Real> > _vibExtend;
+  Source<std::vector<Real> > _vibratoFrequency;
+  Source<std::vector<Real> > _vibratoExtend;
 
  public:
   Vibrato() {
     declareAlgorithm("Vibrato");
     declareInput(_pitch, TOKEN, "pitch");
-    declareOutput(_vibFrequency, TOKEN, "vibratoFrequency");
-    declareOutput(_vibExtend, TOKEN, "vibratoExtend");
+    declareOutput(_vibratoFrequency, TOKEN, "vibratoFrequency");
+    declareOutput(_vibratoExtend, TOKEN, "vibratoExtend");
   }
 };
 
 } // namespace streaming
 } // namespace essentia
 
-#endif // ESSENTIA_VIBRATO_H
+#endif // ESSENTIA_vibratoRATO_H

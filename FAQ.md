@@ -1,41 +1,35 @@
-Frequently Asked Questions
-==========================
+# Frequently Asked Questions
 
-How to compute music descriptors using Essentia?
-------------------------------------------------
-
-Because Essentia is a library you are very fexible in the ways you can compute descriptors out of audio:
-
-- using [premade extractors out-of-box](doc/sphinxdoc/extractors_out_of_box.rst) (the easiest way without programming)
-- using python (see [python tutorial](doc/sphinxdoc/python_tutorial.rst))
-- writing your own C++ extractor (see the premade extractors as examples)
+libessentia.so is not found after installing from source
+--------------------------------------------------------
+The library is installed into /usr/local and your system does not search for shared libraries there. [Configure your paths properly](http://unix.stackexchange.com/questions/67781/use-shared-libraries-in-usr-local-lib).
 
 
-How to compile my own C++ code that uses Essentia?
---------------------------------------------------
+Build Essentia on Ubuntu 14.04 or earlier
+-----------------------------------------
+As it is noted in the [installation guide](http://essentia.upf.edu/documentation/installing.html), Essentia is only compatible with LibAv versions greater or equal to 10. The appropriate versions are distributed since Ubuntu 14.10 and Debian Jessie. If you have an earlier system (e.g., Ubuntu 14.04), you can choose one of the two options:
 
-Here is an example how to compile [standard_mfcc.cpp](https://github.com/MTG/essentia/blob/2.0.1/src/examples/standard_mfcc.cpp) example on Linux linking with a system-wide installation of Essentia (done by ```./waf install```) and all its dependencies. Modify to your needs. 
+- upgrade your system which is recommended to do anyways in the long-term (e.g., to the latest Ubuntu LTS 16.04)
+- install the LibAv dependency from source
 
-```
-g++ -pipe -Wall -O2 -fPIC -I/usr/local/include/essentia/ -I/usr/local/include/essentia/scheduler/ -I/usr/local/include/essentia/streaming/  -I/usr/local/include/essentia/utils -I/usr/include/taglib -I/usr/local/include/gaia2 -I/usr/include/qt4 -I/usr/include/qt4/QtCore -D__STDC_CONSTANT_MACROS standard_mfcc.cpp -o standard_mfcc -L/usr/local/lib -lessentia -lfftw3 -lyaml -lavcodec -lavformat -lavutil -lsamplerate -ltag -lfftw3f -lQtCore -lgaia2
-```
+To install LibAv from source:
 
-Alternatively, if you want to create and build your own examples, the easiest way is to add them to ```src/examples``` folder, modify ```src/examples/wscript``` file accordingly and use ```./waf configure --with-examples; ./waf``` to build them.
-
-You can build your application using XCode (OSX) following [these steps](https://github.com/MTG/essentia/issues/58#issuecomment-38530548).
-
-
-OSX static builds and templates (JUCE/VST and openFrameworks)
-------------------------------------------------------------------------------------------------------------
-
-Here you can find portable 32-bit static builds of the Essentia C++ library and its dependencies for OSX (thanks to Cárthach from GiantSteps) as well as templates for JUCE/VST and openFrameworks:
-
-https://github.com/GiantSteps/Essentia-Libraries 
-
+- If you have installed LibAv before, remove it so that it does not mess up Essentia installation 
+    ```
+    sudo apt-get remove libavcodec-dev libavformat-dev libavutil-dev libavresample-dev
+    ```
+- Download and unpack [LibAv source code](https://libav.org/download/)
+- Configure and build LibAv. The library will be installed to ```/usr/local```.
+    ```
+    ./configure --disable-yasm --enable-shared
+    make
+    sudo make install
+    ```
+- [Configure and build Essentia](http://essentia.upf.edu/documentation/installing.html#compiling-essentia)
 
 
 Linux/OSX static builds
--------------------
+-----------------------
 
 Follow the steps below to create static build of the library and executable example extractors.
 
@@ -76,6 +70,38 @@ Build Essentia:
 The static executables will be in the ```build/src/examples``` folder.
 
 
+Building lightweight Essentia with reduced dependencies 
+-----------------------------------------------------
+Since version 2.1, build scripts can be configured to ignore 3rdparty dependencies required by Essentia in order to create a striped-down version of the library.  Use  ```./waf configure``` command with the ```--lightweight``` flag to provide the list of 3rdparty dependencies to be included. For example, the command below will configure to build Essentia avoiding all dependencies except fftw:
+```
+./waf configure --lightweight=fftw
+```
+
+Avoid all dependencies including fftw and build with KissFFT instead (BSD, included in Essentia therefore no external linking needed, cross-platform):
+
+```
+./waf configure --lightweight= --fft=KISS
+```
+
+Avoid all dependencies and build with Accelerate FFT (native on OSX/iOS):
+
+```
+./waf configure --lightweight= --fft=ACCELERATE
+```
+
+It is also possible to specify algorithms to be ignored using the ```--ignore-algos``` flag, although you need to take care that the ignored algorithm are not required by any of the algorithms and examples that will be compiled. 
+
+Note, that Essentia includes in its code the Spline library (LGPLv3) which is used by Spline and CubicSpline algorithms and is built by default. To ignore this library, use the following flag in ```./waf configure``` command:
+```
+--ignore-algos=Spline,CubicSpline
+```
+
+For more details on the build flags, run:
+```
+./waf --help
+```
+
+
 Cross-compiling for Windows on Linux
 ------------------------------------
 
@@ -107,6 +133,7 @@ export PATH=~/Dev/android/toolchain/bin:$PATH;
 ./waf
 ./waf install
 ```
+
 
 Cross-compiling for iOS
 -----------------------
@@ -159,6 +186,27 @@ emcc -Oz application.bc ${LIB_DIR}/libessentia.a ${LIB_DIR}/libfftw3f.a -o out.j
 ```
 
 
+OSX static builds and templates (JUCE/VST and openFrameworks)
+-------------------------------------------------------------
+
+Here you can find portable 32-bit static builds of the Essentia C++ library and its dependencies for OSX (thanks to Cárthach from GiantSteps) as well as templates for JUCE/VST and openFrameworks:
+
+https://github.com/GiantSteps/Essentia-Libraries
+
+
+Building standalone Essentia Vamp plugin
+----------------------------------------
+
+It is possible to create a standalone binary for Essentia's Vamp plugin (works for Linux and OSX).
+
+```
+./waf configure --build-static --with-vamp --mode=release --lightweight= --fft=KISS
+./waf
+```
+
+The resulting binary (```build/src/examples/libvamp_essentia.so``` on Linux, ```build/src/examples/libvamp_essentia.dylib``` on OSX) is a lightweight shared library that can be distributed as a single file without requirement to install Essentia's dependencies on the target machine.
+
+
 Running tests
 -------------
 In the case you want to assure correct working of Essentia, do the tests.
@@ -184,6 +232,97 @@ python test/src/unittest/all_tests.py audioloader_streaming
 ```
 
 
+Writing tests
+-------------
+It is manadatory to write python unit tests when developing new algorithms to be included in Essentia. The easiest way to start writing a test is to adapt [existing examples](https://github.com/MTG/essentia/tree/master/test/src/unittest).
+
+All unit tests for algorithms are located in ```test/src/unittest``` folder. They are organized by sub-folders similarly to the code for the algorithms. 
+
+Typically tests include:
+
+- Tests for invalid parameters
+- Tests for incorrect inputs
+- Tests for empty, silence or constant-value inputs
+- Tests for simulated data inputs for which the output is known
+- Regression tests for real data inputs for which the reference output was previously computed.
+    - These tests are able to detect if there was a change in output values according to the expected reference. The reference is not necessarily a 100% correct ground truth. In many case the reference is built using an earlier version of the same algorithm being tested or is obtained from other software.
+
+A number of assert methods are available: 
+
+- ```assertConfigureFails``` (test if algorithm configuration fails)
+- ```assertComputeFails``` (test if algorithm's compute method fails)
+- ```assertRaises``` (test if exception is raised)
+- ```assertValidNumber``` (test if a number is not NaN nor Inf)
+- ```assertEqual```, ```assertEqualVector```, ```assertEqualMatrix``` (test if observed and expected values are equal)
+- ```assertAlmostEqualFixedPrecision```, ```assertAlmostEqualVectorFixedPrecision``` (test if observed and expected values are approximately equal by computing the difference, rounding to the given number on decimal places, and comparing to zero)
+- ```assertAlmostEqual```, ```assertAlmostEqualVector```, ```assertAlmostEqualMatrix``` (test if observed and expected values are approximately equal according to the given allowed relative error.
+- ```assertAlmostEqualAbs```, ```assertAlmostEqualVectorAbs``` (test if the difference between observed and expected value is lower than then the given absolute threshold)
+
+
+How to compile my own C++ code that uses Essentia?
+--------------------------------------------------
+
+Here is an example how to compile [standard_mfcc.cpp](https://github.com/MTG/essentia/blob/2.0.1/src/examples/standard_mfcc.cpp) example on Linux linking with a system-wide installation of Essentia (done by ```./waf install```) and all its dependencies. Modify to your needs. 
+
+```
+g++ -pipe -Wall -O2 -fPIC -I/usr/local/include/essentia/ -I/usr/local/include/essentia/scheduler/ -I/usr/local/include/essentia/streaming/  -I/usr/local/include/essentia/utils -I/usr/include/taglib -I/usr/local/include/gaia2 -I/usr/include/qt4 -I/usr/include/qt4/QtCore -D__STDC_CONSTANT_MACROS standard_mfcc.cpp -o standard_mfcc -L/usr/local/lib -lessentia -lfftw3 -lyaml -lavcodec -lavformat -lavutil -lsamplerate -ltag -lfftw3f -lQtCore -lgaia2
+```
+
+Alternatively, if you want to create and build your own examples, the easiest way is to add them to ```src/examples``` folder, modify ```src/examples/wscript``` file accordingly and use ```./waf configure --with-examples; ./waf``` to build them.
+
+You can build your application using XCode (OSX) following [these steps](https://github.com/MTG/essentia/issues/58#issuecomment-38530548).
+
+
+How to compute music descriptors using Essentia?
+------------------------------------------------
+
+Because Essentia is a library you are very fexible in the ways you can compute descriptors out of audio:
+
+- using [premade extractors out-of-box](doc/sphinxdoc/extractors_out_of_box.rst) (the easiest way without programming)
+- using python (see [python tutorial](doc/sphinxdoc/python_tutorial.rst))
+- writing your own C++ extractor (see the premade extractors as examples)
+
+
+Training and running classifier models in Gaia
+----------------------------------------------
+In order to run classification in Essentia you need to prepare a classifier model in Gaia and run GaiaTransform algorithm configured to use this model. The example of using high-level models can be seen in the code of ```streaming_music_extractor```. Here we discuss the steps to be followed to train classifier models that can be used with this extractor.
+
+1. Compute music descriptors using ```streaming_music_extractor``` for all audio files.
+2. Install Gaia with python bindings.
+3. Prepare json [groundtruth](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/groundtruth_example.yaml) and [filelist](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/filelist_example.yaml) files (see examples).
+    - Groundtruth file maps identifiers for audio files (they can be paths to audio files or whatever id strings you want to use) to class labels. 
+    - Filelist file maps these identifiers to the actual paths to the descriptor files for each audio track. 
+4. Currently Gaia does not support loading descriptors in json format, as a workaround you can configure the extractor output to yaml format in Step 1, or run ```json_to_sig.py``` [conversion script](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/json_to_sig.py).  
+5. Run ```train_model.py``` script in Gaia ([here](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/train_model.py)) with these groundtruth and filelist files. The script will create the classifier model file. 
+
+6. The model file can now be used by a GaiaTransform algorithm inside ```streaming_music_extractor```. 
+
+Alternatively to steps 3-5, you can use a simplified [script](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/train_model_from_sigs.py) that trains a model given a folder with sub-folders corresponding to class names and containing descriptor files for these classes. 
+
+Note that using a specific classifier model implies that you are expected to give a pool with the same descriptor layout as the one used in training as an input to GaiaTransform Algorithm. 
+
+### How it works
+To train the SVMs Gaia internally uses [LibSVM](https://www.csie.ntu.edu.tw/~cjlin/libsvm/) library. The training script automatically creates an SVM model given a ground-truth dataset using the best combination of parameters for data preprocessing and SVM that it can find in a grid search. Testing all possible combinations the script conducts a 5-fold cross-validation for each one of them: The ground-truth dataset is randomly split into train and test sets, the model is trained on the train set and is evaluated on the test set. Results are averaged across 5 folds including the confusion matrix. After all combinations of parameters have been evaluated, the winner combination is selected according to the best accuracy obtained in cross-validation and the final SVM classifier model is trained using *all* ground-truth data. See the "Cross-validation and Grid-search" section in the [practical guide to SVM classification](https://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf) for more details.
+
+The combinations of parameters tested in a grid search by default are mentioned [in the code](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/classification_project_template.yaml). Users are able to modify these parameters according to their needs by creating such a classification project file on their own.
+
+The parameters include:
+- SVM kernel type: polynomial or RBF
+- SVM type: currently only C-SVC
+- SVM C and gamma parameters
+- preprocessing type:
+    - use all descriptors, no preprocessing
+    - use ```lowlevel.*``` descriptors only
+    - discard energy bands descriptors (```*barkbands*```, ```*energyband*```, ```*melbands*```, ```*erbbands*```)
+    - use all descriptors, normalize values
+    - use all descriptors, normalize and gaussianize values
+- number of folds in cross-validation: 5 by default
+
+In the preprocessing stage, training script loads all descriptor files according to the preprocessing type. Additionally, a number of descriptors are always ignored, including all ```metadata*``` that is the information not directly associated with audio analysis. The ```*.dmean```, ```*.dvar```, ```*.min```, ```*.max```, ```*.cov``` descriptors are also ignored, and therefore, currently only means and variances are used for descriptors summarized across frames. Non-numerical descriptors are enumerated (```tonal.chords_key```, ```tonal.chords_scale```, ```tonal.key_key```, ```tonal.key_scale```).
+
+Note that cross-validation script splits the ground-truth dataset into train and test sets randomly. In the case of music classification tasks one may want to assure artist/album filtering (that is, no artist/album occures in the test set if it occures in train set). Current way to achieve it is to ensure that the whole input dataset contains only one item per artist/album. Alternatively, you can adapt the scripts to suit your needs.
+
+
 How to know which other Algorithms an Algorithm uses?
 -----------------------------------------------------
 
@@ -207,59 +346,6 @@ python src/examples/python/show_algo_dependencies.py > /tmp/all.txt
 cat /tmp/all.txt | grep -- "---------- " | cut -c 12- | sed s/"streaming : "// | sed s/"standard : "// | sed s/" ----------"// | sort -u | wc -l
 ```
 
-Training and running classifier models in Gaia
-----------------------------------------------
-In order to run classification in Essentia you need to prepare a classifier model in Gaia and run GaiaTransform algorithm configured to use this model. The example of using high-level models can be seen in the code of ```streaming_music_extractor```. Here we discuss the steps to be followed to train classifier models that can be used with this extractor.
-
-1. Compute music descriptors using ```streaming_music_extractor``` for all audio files.
-2. Install Gaia with python bindings.
-3. Prepare json [groundtruth](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/groundtruth_example.yaml) and [filelist](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/filelist_example.yaml) files (see examples).
-    - Groundtruth file maps identifiers for audio files (they can be paths to audio files or whatever id strings you want to use) to class labels. 
-    - Filelist file maps these identifiers to the actual paths to the descriptor files for each audio track. 
-4. Currently Gaia does not support loading descriptors in json format, as a workaround you can configure the extractor output to yaml format in Step 1, or run ```json_to_sig.py``` [conversion script](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/json_to_sig.py).  
-5. Run ```train_model.py``` script in Gaia ([here](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/train_model.py)) with these groundtruth and filelist files. The script will create the classifier model file. 
-
-6. The model file can now be used by a GaiaTransform algorithm inside ```streaming_music_extractor```. 
-
-Alternatively to steps 3-5, you can use a simplified [script](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/train_model_from_sigs.py) that trains a model given a folder with sub-folders corresponding to class names and containing descriptor files for these classes. 
-
-
-Note that using a specific classifier model implies that you are expected to give a pool with the same descriptor layout as the one used in training as an input to GaiaTransform Algorithm. 
-
-The training script automatically creates an SVM model given a ground-truth dataset.  It allows to select for the best combination of SVM parameters (polynomial or RBF kernels, various gamma and C coefficients) in a grid search. In addition it also allows to do feature selection/preprocessing and select the best preprocessing among several that were identified as useful (e.g., all descriptors vs only spectral descriptors, or where to apply or not normalization; Currently, only means and variances are are used for descriptors summarized across frames). The combinations of parameters tested in a grid search are mentioned [in the code](https://github.com/MTG/gaia/blob/master/src/bindings/pygaia/scripts/classification/classification_project_template.yaml). Users are able to modify these parameters according to their needs by creating such a classification project file on their own.
-
-To train the SVMs Gaia internally uses LibSVM library. For each combination of parameters in a grid search, 5-fold cross-validation evaluation is run splitting  ground-truth dataset into train and test splits and averaging results across folds (including the confusion matrix). After all combinations have been evaluated, the winner combination is selected according to the best accuracy and the final SVM classifier model is trained using *all* ground-truth data.
-
-Building lightweight Essentia with reduced dependencies 
------------------------------------------------------
-Since version 2.1, build scripts can be configured to ignore 3rdparty dependencies required by Essentia in order to create a striped-down version of the library.  Use  ```./waf configure``` command with the ```--lightweight``` flag to provide the list of 3rdparty dependencies to be included. For example, the command below will configure to build Essentia avoiding all dependencies except fftw:
-```
-./waf configure --lightweight=fftw
-```
-
-Avoid all dependencies including fftw and build with KissFFT instead (BSD, included in Essentia therefore no external linking needed, cross-platform):
-
-```
-./waf configure --lightweight= --fft=KISS
-```
-
-Avoid all dependencies and build with Accelerate FFT (native on OSX/iOS):
-
-```
-./waf configure --lightweight= --fft=ACCELERATE
-```
-
-It is also possible to specify algorithms to be ignored using the ```--ignore-algos``` flag, although you need to take care that the ignored algorithm are not required by any of the algorithms and examples that will be compiled. 
-
-Note, that Essentia includes in its code the Spline library (LGPLv3) which is used by Spline and CubicSpline algorithms and is built by default. To ignore this library, use the following flag in ```./waf configure``` command:
-```
---ignore-algos=Spline,CubicSpline
-```
-
-For more details on the build flags, run:
-```
-./waf --help
-```
 
 Using Essentia real-time
 ------------------------
@@ -267,33 +353,15 @@ You can use Essentia's streaming mode in real time feeding input audio frames to
 
 As an example, see the code of [essentiaRT~](https://github.com/GiantSteps/MC-Sonaar/tree/master/essentiaRT~). 
 
-- [EssentiaOnset.cpp#L63](https://github.com/GiantSteps/MC-Sonaar/blob/master/essentiaRT~/EssentiaOnset.cpp#L63)
-- [EssentiaOnset.cpp#L112](https://github.com/GiantSteps/MC-Sonaar/blob/master/essentiaRT~/EssentiaOnset.cpp#L112)
-- [main.cpp#L74](https://github.com/GiantSteps/MC-Sonaar/blob/master/essentiaRT~/main.cpp#L74)
+- [EssentiaOnset.cpp#L70](https://github.com/GiantSteps/MC-Sonaar/blob/master/essentiaRT~/EssentiaOnset.cpp#L70)
+- [EssentiaOnset.cpp#L127](https://github.com/GiantSteps/MC-Sonaar/blob/master/essentiaRT~/EssentiaOnset.cpp#L127)
+- [main.cpp](https://github.com/GiantSteps/MC-Sonaar/blob/master/essentiaRT~/main.cpp)
 
 You can also use Essentia's standard mode for real-time computations. 
 
 Not all algorithms available in the library are suited for real-time analysis due to their computational complexity. Some complex algorithms, such as BeatTrackerDegara, BeatTrackerMultiFeatures, and PredominantMelody, require large segments of audio in order to function properly.
 
 Make sure that you do not reconfigure an algorithm (from the main UI thread, most likely) while an audio callback (from an audio thread) is currently being called, as the algorithms are not thread-safe.
-
-
-libessentia.so is not found after installing from source
---------------------------------------------------------
-The library is installed into /usr/local and your system does not search for shared libraries there. [Configure your paths properly](http://unix.stackexchange.com/questions/67781/use-shared-libraries-in-usr-local-lib).
-
-
-Building standalone Essentia Vamp plugin
-----------------------------------------
-
-It is possible to create a standalone binary for Essentia's Vamp plugin (works for Linux and OSX).
-
-```
-./waf configure --build-static --with-vamp --mode=release --lightweight= --fft=KISS
-./waf
-```
-
-The resulting binary (```build/src/examples/libvamp_essentia.so``` on Linux, ```build/src/examples/libvamp_essentia.dylib``` on OSX) is a lightweight shared library that can be distributed as a single file without requirement to install Essentia's dependencies on the target machine.
 
 
 Essentia Music Extractor

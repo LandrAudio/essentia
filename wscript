@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import os
 import sys
 import platform
@@ -11,8 +13,8 @@ def get_git_version():
     if os.path.exists(".git"):
         try:
             version = os.popen("git describe --dirty --always").read().strip()
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
     return version
 
 
@@ -25,7 +27,7 @@ out = 'build'
 
 
 def options(ctx):
-    ctx.load('compiler_cxx compiler_c')
+    ctx.load('compiler_cxx compiler_c python')
     ctx.recurse('src')
 
     ctx.add_option('--with-cpptests', action='store_true',
@@ -39,7 +41,7 @@ def options(ctx):
     ctx.add_option('--arch', action='store',
                    dest='ARCH', default="x64",
                    help='Target architecture when compiling on OSX: i386, x64 or FAT')
-                                      
+
     ctx.add_option('--cross-compile-mingw32', action='store_true',
                    dest='CROSS_COMPILE_MINGW32', default=False,
                    help='cross-compile for windows using mingw32 on linux')
@@ -54,7 +56,7 @@ def options(ctx):
 
     ctx.add_option('--cross-compile-ios-sim', action='store_true',
                    dest='CROSS_COMPILE_IOS_SIM', default=False,
-                   help='cross-compile for iOS (i386)')                   
+                   help='cross-compile for iOS (i386)')
 
     ctx.add_option('--emscripten', action='store_true',
                    dest='EMSCRIPTEN', default=False,
@@ -106,7 +108,7 @@ def configure(ctx):
 
     if ctx.options.EMSCRIPTEN:
         ctx.env.CXXFLAGS += [ '-I' + os.path.join(os.environ['EMSCRIPTEN'], 'system', 'lib', 'libcxxabi', 'include') ]
-	ctx.env.CXXFLAGS += ['-Oz']
+        ctx.env.CXXFLAGS += ['-Oz']
     elif sys.platform == 'darwin':
         # clang fails on 10.7 using <atomic>, because libc++ is not new enough
         #ctx.env.CC = 'clang'
@@ -128,7 +130,7 @@ def configure(ctx):
         if ctx.options.ARCH == 'FAT':
             ctx.env.CXXFLAGS += [ '-arch' , 'i386', '-arch', 'x86_64']
             ctx.env.LINKFLAGS += [ '-arch' , 'i386', '-arch', 'x86_64']
-            ctx.env.LDFLAGS = [ '-arch' , 'i386', '-arch', 'x86_64']        
+            ctx.env.LDFLAGS = [ '-arch' , 'i386', '-arch', 'x86_64']
 
     elif sys.platform.startswith('linux'):
         # include -pthread flag because not all versions of gcc provide it automatically
@@ -138,35 +140,35 @@ def configure(ctx):
     elif sys.platform == 'win32':
         # compile libgcc and libstd statically when using MinGW
         ctx.env.CXXFLAGS = [ '-static-libgcc', '-static-libstdc++' ]
-        
+
         win_path = "packaging/win32_3rdparty"
-        
+
         # Establish MINGW locations
         tdm_root = ctx.options.prefix
         tdm_bin = tdm_root + "/bin"
         tdm_include = tdm_root + "/include"
-        tdm_lib = tdm_root + "/lib"        
-        
+        tdm_lib = tdm_root + "/lib"
+
         # make pkgconfig find 3rdparty libraries in packaging/win32_3rdparty
         # libs_3rdparty = ['yaml-0.1.5', 'fftw-3.3.3', 'libav-0.8.9', 'libsamplerate-0.1.8']
         # libs_paths = [';packaging\win32_3rdparty\\' + lib + '\lib\pkgconfig' for lib in libs_3rdparty]
         # os.environ["PKG_CONFIG_PATH"] = ';'.join(libs_paths)
-        
+
         os.environ["PKG_CONFIG_PATH"] = tdm_root + '\lib\pkgconfig'
-         
+
         # TODO why this code does not work?
         # force the use of mingw gcc compiler instead of msvc
         #ctx.env.CC = 'gcc'
         #ctx.env.CXX = 'g++'
-        
+
         import distutils.dir_util
 
-        print "copying pkgconfig ..."
+        print("copying pkgconfig ...")
         distutils.dir_util.copy_tree(win_path + "/pkgconfig/bin", tdm_bin)
 
         libs_3rdparty = ['yaml-0.1.5', 'fftw-3.3.3', 'libav-0.8.9', 'libsamplerate-0.1.8', 'taglib-1.9.1']
         for lib in libs_3rdparty:
-            print "copying " + lib + "..."
+            print("copying " + lib + "...")
             distutils.dir_util.copy_tree(win_path + "/" + lib + "/include", tdm_include)
             distutils.dir_util.copy_tree(win_path + "/" + lib + "/lib", tdm_lib)
 
@@ -175,33 +177,34 @@ def configure(ctx):
         ctx.find_program('arm-linux-androideabi-gcc', var='CC')
         ctx.find_program('arm-linux-androideabi-g++', var='CXX')
         ctx.find_program('arm-linux-androideabi-ar', var='AR')
+        ctx.env.LINKFLAGS += ['-Wl,-soname,libessentia.so']
 
     if ctx.options.CROSS_COMPILE_IOS:
         print ("→ Cross-compiling for iOS (ARMv7 and ARM64)")
-        ctx.env.CXXFLAGS += [ '-arch' , 'armv7']        
+        ctx.env.CXXFLAGS += [ '-arch' , 'armv7']
         ctx.env.LINKFLAGS += [ '-arch', 'armv7']
-        ctx.env.LDFLAGS += ['-arch', 'armv7']        
-        ctx.env.CXXFLAGS += [ '-arch' , 'arm64']        
+        ctx.env.LDFLAGS += ['-arch', 'armv7']
+        ctx.env.CXXFLAGS += [ '-arch' , 'arm64']
         ctx.env.LINKFLAGS += [ '-arch', 'arm64']
-        ctx.env.LDFLAGS += ['-arch', 'armv64']                
-        
+        ctx.env.LDFLAGS += ['-arch', 'armv64']
+
         ctx.env.CXXFLAGS += ['-stdlib=libc++']
-        ctx.env.CXXFLAGS += ['-miphoneos-version-min=5.0']    
+        ctx.env.CXXFLAGS += ['-miphoneos-version-min=5.0']
         ctx.env.CXXFLAGS += [ '-isysroot' , '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk']
         ctx.env.CXXFLAGS += [ '-fembed-bitcode']
 
     if ctx.options.CROSS_COMPILE_IOS_SIM:
         print ("→ Cross-compiling for iOS Simulator (i386)")
-        ctx.env.CXXFLAGS += [ '-arch' , 'i386']        
+        ctx.env.CXXFLAGS += [ '-arch' , 'i386']
         ctx.env.LINKFLAGS += [ '-arch', 'i386']
-        ctx.env.LDFLAGS += ['-arch', 'i386']        
-        ctx.env.CXXFLAGS += [ '-arch' , 'x86_64']        
+        ctx.env.LDFLAGS += ['-arch', 'i386']
+        ctx.env.CXXFLAGS += [ '-arch' , 'x86_64']
         ctx.env.LINKFLAGS += [ '-arch', 'x86_64']
-        ctx.env.LDFLAGS += ['-arch', 'x86_64']        
-                    
+        ctx.env.LDFLAGS += ['-arch', 'x86_64']
+
         ctx.env.CXXFLAGS += ['-stdlib=libc++']
-        ctx.env.CXXFLAGS += ['-miphoneos-version-min=5.0']    
-        ctx.env.CXXFLAGS += [ '-isysroot' , '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk']        
+        ctx.env.CXXFLAGS += ['-miphoneos-version-min=5.0']
+        ctx.env.CXXFLAGS += [ '-isysroot' , '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk']
 
     # use manually prebuilt dependencies in the case of static examples or mingw cross-build
     if ctx.options.CROSS_COMPILE_MINGW32:
@@ -279,7 +282,9 @@ def build(ctx):
             )
 
 def run_tests(ctx):
-    os.system(out + '/basetest')
+    ret = os.system(out + '/basetest')
+    if ret:
+        ctx.fatal('failed to run tests. Check test output')
 
 def run_python_tests(ctx):
     # create a local python package folder
@@ -287,7 +292,9 @@ def run_python_tests(ctx):
     os.system('cp -r src/python/essentia build/python/')
     os.system('cp build/src/python/_essentia.so build/python/essentia')
 
-    os.system('PYTHONPATH=build/python python test/src/unittest/all_tests.py')
+    ret = os.system('PYTHONPATH=build/python python test/src/unittest/all_tests.py')
+    if ret:
+        ctx.fatal('failed to run python tests. Check test output')
 
 def ipython(ctx):
     os.system('ipython --pylab')
@@ -296,6 +303,7 @@ def doc(ctx):
     # create a local python package folder
     os.system('mkdir -p build/python')
     os.system('cp -r src/python/essentia build/python/essentia')
-    os.system('cp build/src/python/_essentia.so build/python/essentia')
+    os.system('cp build/src/python/_essentia.so build/python')
+    pythonpath = os.path.abspath('build/python')
 
-    os.system('PYTHONPATH=build/python doc/build_sphinx_doc.sh')
+    os.system('PYTHONPATH=%s doc/build_sphinx_doc.sh' % pythonpath)

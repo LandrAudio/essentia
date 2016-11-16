@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -70,7 +70,7 @@ void  MusicRhythmDescriptors::createNetwork(SourceBase& source, Pool& pool){
   Algorithm* danceability = factory.create("Danceability");
   source                                >> danceability->input("signal");
   danceability->output("danceability")  >> PC(pool, nameSpace + "danceability");
-
+  danceability->output("dfa")           >> NOWHERE;
 }
 
 void MusicRhythmDescriptors::createNetworkBeatsLoudness(SourceBase& source, Pool& pool){
