@@ -44,7 +44,7 @@ class StreamingAlgorithmWrapper : public Algorithm {
  public:
 
   StreamingAlgorithmWrapper() : _algorithm(0) {}
-  ~StreamingAlgorithmWrapper();
+  virtual ~StreamingAlgorithmWrapper();
 
   void declareInput(SinkBase& sink, NumeralType type, const std::string& name);
   void declareInput(SinkBase& sink, NumeralType type, int n, const std::string& name);
