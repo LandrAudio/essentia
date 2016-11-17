@@ -59,6 +59,12 @@ void SingleBeatLoudness::configure() {
   _energy->input("array").set(_spec);
   _energy->output("energy").set(_energyValue);
 
+  for (int i = 0; i < _energyBand.size(); ++i)
+  {
+      delete _energyBand[i];
+      _energyBand[i] = nullptr;
+  }
+
   _frequencyBands = parameter("frequencyBands").toVectorReal();
   int nBands = _frequencyBands.size();
   _energyBand.resize(nBands-1);
