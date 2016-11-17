@@ -53,6 +53,13 @@ class ESSENTIA_API AlgorithmComposite : public Algorithm {
 
  public:
 
+  //virtual desctructor because this makes use of inheritance.
+  virtual ~AlgorithmComposite() 
+  {
+      // Note: no need to do anything here wrt to sources and sinks, as they
+      //       disconnect themselves when destroyed.
+  }
+
   // Those are available here because it doesn't make sense to require an
   // acquire/release size from a proxy source/sink
   void declareInput(SinkBase& sink, const std::string& name, const std::string& desc);
