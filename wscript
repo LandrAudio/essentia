@@ -133,6 +133,7 @@ def configure(ctx):
     elif sys.platform.startswith('linux'):
         # include -pthread flag because not all versions of gcc provide it automatically
         ctx.env.CXXFLAGS += [ '-pthread' ]
+        ctx.env.CXXFLAGS += [ '-std=c++11' ]
 
 
     elif sys.platform == 'win32':
