@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
     FreesoundExtractor *extractor = new FreesoundExtractor();
     extractor->compute(audioFilename);
     //extractor->outputToFile(extractor->stats, outputFilename+".json", true);
-    extractor->outputToFile(extractor->stats, outputFilename+"_statistics.yaml", "yaml");
+    extractor->outputToFile(extractor->stats, outputFilename+"_statistics.json", "json");
     extractor->outputToFile(extractor->results, outputFilename+"_frames.json", "json");
   
     essentia::shutdown();

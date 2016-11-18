@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -26,13 +26,10 @@ using namespace std;
 namespace essentia {
 namespace standard {
 
-const Real TempoTapDegara::_alpha = 0.5;
-const Real TempoTapDegara::_sigma_ibi = 0.025;
-
 const int TempoTapDegara::_numberCombs = 4;
-const Real TempoTapDegara::_frameDurationODF = 5.944308390022676;
 
 const char* TempoTapDegara::name = "TempoTapDegara";
+const char* TempoTapDegara::category = "Rhythm";
 const char* TempoTapDegara::description = DOC("This algorithm estimates beat positions given an onset detection function.  The detection function is partitioned into 6-second frames with a 1.5-second increment, and the autocorrelation is computed for each frame, and is weighted by a tempo preference curve [2]. Periodicity estimations are done frame-wisely, searching for the best match with the Viterbi algorith [3]. The estimated periods are then passed to the probabilistic beat tracking algorithm [1], which computes beat positions.\n"
 "\n"
 "Note that the input values of the onset detection functions must be non-negative otherwise an exception is thrown. Parameter \"maxTempo\" should be 20bpm larger than \"minTempo\", otherwise an exception is thrown.\n"
@@ -43,7 +40,17 @@ const char* TempoTapDegara::description = DOC("This algorithm estimates beat pos
 "  [3] Stark, A. M., Davies, M. E., & Plumbley, M. D. (2009, September). Real-time beatsynchronous analysis of musical audio. In 12th International Conference on Digital Audio Effects (DAFx-09), Como, Italy.");
 
 
+
 void TempoTapDegara::configure() {
+  _frameDurationODF = 5.944308390022676;
+  
+  // decoding weighting parameter
+  _alpha = 0.5; 
+
+  // std of the inter-beat interval pdf, 
+  // it models potential variations in the inter-beat interval in secs.
+  _sigma_ibi = 0.025; 
+  
   Real minTempo = parameter("minTempo").toInt();
   Real maxTempo = parameter("maxTempo").toInt();
 
@@ -332,7 +339,7 @@ void TempoTapDegara::computeHMMTransitionMatrix(const vector<Real>& ibiPDF,
 
     // Matlab: check for numerical problems (probabilities should be within [0,1])
     if (transitions[i][0] < 0 || transitions[i][0] > 1) {
-      cerr << "Numerical problems in TempoTapDegara::computeHMMTransitionMatrix" << endl;
+      E_WARNING("Numerical problems in TempoTapDegara::computeHMMTransitionMatrix");
       // TODO should be Essentia exception instead?
       // truncate to 1 to avoid further NaNs in log computation
       if (transitions[i][0] < 0) {

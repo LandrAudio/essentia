@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -50,10 +50,11 @@ class TempoTapMaxAgreement : public Algorithm {
   void compute();
 
   static const char* name;
+  static const char* category;
   static const char* description;
 
  private:
-  static const Real _minTickTime;  // ignore peaks before this time [s]
+  Real _minTickTime;  // ignore peaks before this time [s]
   static const int _numberBins; // number of histogram bins for information gain method
                                      // corresponds to Log2(40) = 5.32 maximum
                                      // confidence value
@@ -62,8 +63,8 @@ class TempoTapMaxAgreement : public Algorithm {
   std::vector<Real> _binValues;
 
   // parameters for the continuity-based method
-  static const Real _phaseThreshold; // size of tolerance window for beat phase
-  static const Real _periodThreshold; // size of tolerance window for beat period
+  Real _phaseThreshold;  // size of tolerance window for beat phase
+  Real _periodThreshold; // size of tolerance window for beat period
 
   Real computeBeatInfogain(std::vector<Real>& ticks1, std::vector<Real>& ticks2);
 
