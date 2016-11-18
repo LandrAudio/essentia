@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -26,6 +26,7 @@ using namespace standard;
 
 
 const char* SineSubtraction::name = "SineSubtraction";
+const char* SineSubtraction::category = "Synthesis";
 const char* SineSubtraction::description = DOC("This algorithm subtracts the sinusoids computed with the sine model analysis from an input audio signal. It ouputs an audio signal.");
 
 
@@ -34,15 +35,17 @@ void SineSubtraction::configure() {
     _sampleRate = parameter("sampleRate").toReal();
     _fftSize = parameter("fftSize").toInt();
     _hopSize = parameter("hopSize").toInt();
-
+    
 		// configure algorithms
 	 	std::string wtype = "blackmanharris92"; // default "hamming"
 		_window->configure( "type", wtype.c_str());
 
 	_fft->configure("size", _fftSize);
 
+    
+   Real gain = 1.f/Real(_fftSize);
 	_overlapadd->configure( "frameSize", _fftSize, // uses synthesis window
-													"hopSize", _hopSize);
+													"hopSize", _hopSize,"gain", gain);
 	// create synthesis window
 	createSynthesisWindow(_synwindow, _hopSize, _fftSize);
 

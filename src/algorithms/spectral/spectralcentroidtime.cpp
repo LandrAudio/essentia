@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -24,8 +24,8 @@ using namespace essentia;
 using namespace standard;
 
 const char* SpectralCentroidTime::name = "SpectralCentroidTime";
-const char* SpectralCentroidTime::description = DOC("This algorithm computes the spectral centroid of a signal.\n"
- "A first difference filter is applied to the input signal. Then the centroid is computed by dividing the norm of the resulting signal by the norm of the input signal. The centroid is given in hertz.\n"
+const char* SpectralCentroidTime::category = "Spectral";
+const char* SpectralCentroidTime::description = DOC("This algorithm computes the spectral centroid of a signal in time domain. A first difference filter is applied to the input signal. Then the centroid is computed by dividing the norm of the resulting signal by the norm of the input signal. The centroid is given in hertz.\n"
  "References:\n"
  " [1] Udo Zölzer (2002). DAFX Digital Audio Effects pag.364-365\n");
 

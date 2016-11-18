@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -107,18 +107,18 @@ class ESSENTIA_API EssentiaException : public std::exception {
  * Exception specifically for when a test tone (sine/saw/square wave) has been detected
  */
 class ESSENTIA_API TestToneException : public EssentiaException {
+        
+    public:
+        TestToneException(const char* msg) : EssentiaException(msg), _msg(msg) {}
+        TestToneException(const std::string& msg) : EssentiaException(msg), _msg(msg) {}
+        TestToneException(const std::ostringstream& msg) : EssentiaException(msg), _msg(msg.str()) {}
     
-  public:
-    TestToneException(const char* msg) : EssentiaException(msg), _msg(msg) {}
-    TestToneException(const std::string& msg) : EssentiaException(msg), _msg(msg) {}
-    TestToneException(const std::ostringstream& msg) : EssentiaException(msg), _msg(msg.str()) {}
-    
-    virtual ~TestToneException() throw() {}
-    virtual const char* what() const throw() { return _msg.c_str(); }
-    
-  protected:
-    std::string _msg;
-    
+        virtual ~TestToneException() throw() {}
+        virtual const char* what() const throw() { return _msg.c_str(); }
+        
+    protected:
+        std::string _msg;
+        
 };
 
 /**

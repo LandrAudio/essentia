@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -25,10 +25,8 @@ using namespace essentia;
 using namespace standard;
 
 const char* PitchFilter::name = "PitchFilter";
-const char* PitchFilter::version = "1.0";
-const char* PitchFilter::description = DOC("This algorithm corrects the fundamental frequency"
-" estimations for a sequence of frames given pitch values together with their confidence values"
-" (e.g., by removing non-confident parts and spurious jumps in pitch, and applying octave corrections).\n"
+const char* PitchFilter::category = "Pitch";
+const char* PitchFilter::description = DOC("This algorithm corrects the fundamental frequency estimations for a sequence of frames given pitch values together with their confidence values. In particular, it removes non-confident parts and spurious jumps in pitch and applies octave corrections.\n"
 "\n"
 "They can be computed with the PitchYinFFT, PitchYin, or PredominantPitchMelodia algorithms.\n"
 "If you use PredominantPitchMelodia with guessUnvoiced=True, set useAbsolutePitchConfidence=True.\n"
