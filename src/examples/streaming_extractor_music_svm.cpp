@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -26,7 +26,7 @@
 #include "essentia/algorithmfactory.h"
 #include "essentia/pool.h"
 #include "extractor_music/MusicExtractor.h"
-#include <gaia.h>
+#include <gaia2/gaia.h>
 
 using namespace std;
 using namespace essentia;
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
     extractor->loadSVMModels();
   }
   catch (EssentiaException& e) {
-    cout << e.what() << endl;
+    cerr << e.what() << endl;
     return 1;
   }
 
@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
         process_single_file(extractor, inputFilename, outputFilename, format);
       // On Essentia Exception for a single file, skip it
       } catch (EssentiaException& e) {
-        cerr << "skipping " << inputFilename << " due to error" << endl;
+        cerr << "skipping " << inputFilename << " due to error: " << e.what() << endl;
       }
   }
 

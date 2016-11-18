@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -30,7 +30,8 @@ namespace essentia {
 namespace streaming {
 
 const char* RhythmExtractor2013::name = "RhythmExtractor2013";
-const char* RhythmExtractor2013::description = DOC("This algorithm estimates the beat locations and the confidence of their estimation given an input signal, as well as its tempo in bpm. The beat locations can be computed using:\n"
+const char* RhythmExtractor2013::category = "Rhythm";
+const char* RhythmExtractor2013::description = DOC("This algorithm extracts the beat positions and estimates their confidence as well as tempo in bpm for an audio signal. The beat locations can be computed using:\n"
 "  - 'multifeature', the BeatTrackerMultiFeature algorithm\n"
 "  - 'degara', the BeatTrackerDegara algorithm (note that there is no confidence estimation for this method, the output confidence value is always 0)\n"
 "\n"
@@ -205,6 +206,7 @@ namespace essentia {
 namespace standard {
 
 const char* RhythmExtractor2013::name = essentia::streaming::RhythmExtractor2013::name;
+const char* RhythmExtractor2013::category = essentia::streaming::RhythmExtractor2013::category;
 const char* RhythmExtractor2013::description = essentia::streaming::RhythmExtractor2013::description;
 
 

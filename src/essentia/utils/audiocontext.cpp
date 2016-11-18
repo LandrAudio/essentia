@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -50,7 +50,7 @@ int AudioContext::create(const std::string& filename,
     throw EssentiaException("Could not find a suitable output format for \"", filename, "\"");
   }
   if (format != av_output_format->name) {
-    cerr << "WARNING: Essentia is using a different format than the one supplied. Format used is " << av_output_format->name << endl;
+    E_WARNING("Essentia is using a different format than the one supplied. Format used is " << av_output_format->name);
   }
 
   _muxCtx = avformat_alloc_context();

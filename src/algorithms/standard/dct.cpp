@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -25,6 +25,7 @@ using namespace essentia;
 using namespace standard;
 
 const char* DCT::name = "DCT";
+const char* DCT::category = "Standard";
 const char* DCT::description = DOC("This algorithm computes the Discrete Cosine Transform of an array.\n"
 "It uses the DCT-II form, with the 1/sqrt(2) scaling factor for the first coefficient.\n"
 "Note: The 'inputSize' parameter is only used as an optimization when the algorithm is configured. "

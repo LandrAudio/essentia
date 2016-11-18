@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -24,6 +24,7 @@ using namespace standard;
 using namespace std;
 
 const char* EqualLoudness::name = "EqualLoudness";
+const char* EqualLoudness::category = "Filters";
 const char* EqualLoudness::description = DOC("This algorithm implements an equal-loudness filter. The human ear does not perceive sounds of all frequencies as having equal loudness, and to account for this, the signal is filtered by an inverted approximation of the equal-loudness curves. Technically, the filter is a cascade of a 10th order Yulewalk filter with a 2nd order Butterworth high pass filter.\n"
 "\n"
 "This algorithm depends on the IIR algorithm. Any requirements of the IIR algorithm are imposed for this algorithm. This algorithm is only defined for the sampling rates specified in parameters. It will throw an exception if attempting to configure with any other sampling rate.\n"
