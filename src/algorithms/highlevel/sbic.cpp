@@ -218,9 +218,9 @@ void SBic::compute()
     vector<Real>& segmentation = _segmentation.get();
     vector<Real>& segValues = _segValues.get();
     vector<Real>& bicValues = _bicValues.get();
-    Array2D<Real> window;
+    Array2D<Real> kernel;
 
-    int currSeg = 0, endSeg = 0, currIdx, prevSeg, nextSeg, i;
+    int startKernel = 0, endKernel = 0, currIdx, prevSeg, nextSeg, i;
 
     // I assume matrix's dim1 as the number of features and dim2 as the number of frames
     int nFeatures = features.dim1();
@@ -235,34 +235,32 @@ void SBic::compute()
     ///////////////////////////////////
     // first pass - coarse segmentation
 
-    endSeg = -1; // so the very first pass becomes _size1 - 1
+    endKernel = -1; // so the very first pass becomes _size1 - 1
 
     Real dmin;
-    int offset;
     int prevCurrSeg;
-    while (endSeg < nFrames-1)
+    while (endKernel < nFrames-1)
     {
-        endSeg += _size1;
-        if (endSeg >= nFrames)
+        endKernel += _size1;
+        if (endKernel >= nFrames)
         {
-            endSeg = nFrames-1;
+            endKernel = nFrames-1;
         }
 
-        window = subarray(features, 0, nFeatures-1, currSeg, endSeg);
+        kernel = subarray(features, 0, nFeatures-1, startKernel, endKernel);
 
         // A change has been found
         std::pair<int, std::vector<Real> > bicChangeResult;
-        bicChangeResult = bicChangeSearch(window, _inc1, currSeg, dmin);
-        i = bicChangeResult.first;
+        bicChangeResult = bicChangeSearch(kernel, _inc1, startKernel, dmin);
         std::vector<Real> tmpBicValues(bicChangeResult.second);
         
-        if (i)
+        if (i = bicChangeResult.first)
         {
-            prevCurrSeg = currSeg;
+            prevCurrSeg = startKernel;
             segmentation.push_back(i);
             segValues.push_back(dmin);
-            currSeg = (i + _inc1);
-            endSeg = currSeg - 1;
+            startKernel = (i + _inc1);
+            endKernel = startKernel - 1;
             
             int nToAdd = i - prevCurrSeg + 1;
             
@@ -273,11 +271,11 @@ void SBic::compute()
             }
         }
         
-        if (endSeg == nFrames-1)
+        if (endKernel == nFrames-1)
         {
             for (int j=0; j < tmpBicValues.size(); ++j)
             {
-                bicValues.push_back(tmpBicValues[j+currSeg]);
+                bicValues.push_back(tmpBicValues[j+startKernel]);
             }
         }
     }
@@ -285,30 +283,30 @@ void SBic::compute()
     //////////////////////////////////
     // second pass - fine segmentation
     
-    currSeg = currIdx = prevSeg = nextSeg = 0;
+    startKernel = currIdx = prevSeg = nextSeg = 0;
     int halfSize = _size2 / 2;
 
     for (currIdx=0; currIdx < int(segmentation.size()); ++currIdx)
     {
-        currSeg = int(segmentation[currIdx] - halfSize);
-        if (currSeg < 0)
+        startKernel = int(segmentation[currIdx] - halfSize);
+        if (startKernel < 0)
         {
-            currSeg = 0;
+            startKernel = 0;
         }
 
-        endSeg = currSeg + _size2 - 1;
+        endKernel = startKernel + _size2 - 1;
 
-        if (endSeg >= nFrames)
+        if (endKernel >= nFrames)
         {
-            endSeg = nFrames-1;
+            endKernel = nFrames-1;
         }
 
-        window = subarray(features, 0, nFeatures-1, currSeg, endSeg);
+        kernel = subarray(features, 0, nFeatures-1, startKernel, endKernel);
 
         // A change has been found
         std::pair<int, std::vector<Real> > bicChangeResult;
-        bicChangeResult = bicChangeSearch(window, _inc1, currSeg, dmin);
-        if (i)
+        bicChangeResult = bicChangeSearch(kernel, _inc1, startKernel, dmin);
+        if (i = bicChangeResult.first)
         {
             prevSeg = (currIdx == 0) ? 0 : int(segmentation[currIdx-1]);
             nextSeg = (currIdx + 1 >= int(segmentation.size())) ? nFrames - 1 : int(segmentation[currIdx + 1]);
@@ -343,20 +341,20 @@ void SBic::compute()
         return;
     }
 
-    currSeg = 0;
+    startKernel = 0;
 
     // verify delta_bic is negative between consecutive segments
     for (i=1; i<int(segmentation.size())-1; ++i)
     {
-        endSeg = int(segmentation[i+1]);
-        window = subarray(features, 0, nFeatures-1, currSeg, endSeg);
-        if (delta_bic(window, segmentation[i] - segmentation[i - 1]) > 0)
+        endKernel = int(segmentation[i+1]);
+        kernel = subarray(features, 0, nFeatures-1, startKernel, endKernel);
+        if (delta_bic(kernel, segmentation[i] - segmentation[i - 1]) > 0)
         {
             segmentation.erase(segmentation.begin() + i);
             segValues.erase(segValues.begin() + i);
             --i;
             continue;
         }
-        currSeg = int(segmentation[i] + 1);
+        startKernel = int(segmentation[i] + 1);
     }
 }
