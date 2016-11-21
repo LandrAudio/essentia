@@ -228,7 +228,6 @@ void SBic::compute()
         throw EssentiaException("SBic: second dimension of features matrix is less than 2, unable to perform segmentation with less than 2 frames");
     }
     _cp = 2 * nFeatures;
-    bicValues.resize(nFrames-1, 0.0);
     
     ///////////////////////////////////
     // first pass - coarse segmentation
@@ -261,7 +260,7 @@ void SBic::compute()
 	    int nToAdd = iMin - startKernel + 1;
             for (int j=0; j < nToAdd; ++j)
             {
-                bicValues[startKernel + j] = tmpBicValues[j];
+                bicValues.push_back(tmpBicValues[j]);
             }
 
 	    // Moving the start of the next kernel to the location of the detected segment boundary
@@ -273,7 +272,7 @@ void SBic::compute()
         {
             for (int j=0; j < tmpBicValues.size(); ++j)
             {
-                bicValues[startKernel + j] = tmpBicValues[startKernel + j];
+                bicValues.push_back(tmpBicValues[startKernel + j]);
             }
         }
     }
