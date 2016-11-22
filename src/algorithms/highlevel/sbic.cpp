@@ -220,9 +220,9 @@ void SBic::compute()
     vector<Real>& bicValues = _bicValues.get();
     Array2D<Real> kernel;
 
-    int startKernel = 0, endKernel = 0, currIdx, prevSeg, nextSeg, i;
 
     // I assume matrix's dim1 as the number of features and dim2 as the number of frames
+
     int nFeatures = features.dim1();
     int nFrames = features.dim2();
 
@@ -231,14 +231,13 @@ void SBic::compute()
     }
 
     _cp = 2 * nFeatures;
+    bicValues.resize(nFrames-1, 0.0);
 
     ///////////////////////////////////
     // first pass - coarse segmentation
-
+    int startKernel = 0, endKernel, i;
     endKernel = -1; // so the very first pass becomes _size1 - 1
-
     Real dmin;
-    int prevCurrSeg;
     while (endKernel < nFrames-1)
     {
         endKernel += _size1;
@@ -256,34 +255,35 @@ void SBic::compute()
         
         if (i = bicChangeResult.first)
         {
-            prevCurrSeg = startKernel;
+            // Store the frame index and the value of the BIC change at the detected segment boundary
             segmentation.push_back(i);
             segValues.push_back(dmin);
-            startKernel = (i + _inc1);
-            endKernel = startKernel - 1;
-            
-            int nToAdd = i - prevCurrSeg + 1;
-            
+
             // Store bic values up to (and including) the peak
+            int nToAdd = i - startKernel + 1;
             for (int j=0; j < nToAdd; ++j)
             {
-                bicValues.push_back(tmpBicValues[j]);
+                bicValues[startKernel + j] = tmpBicValues[j];
             }
+
+            // Update kernel start and end
+            startKernel = (i + _inc1);
+            endKernel = startKernel - 1;
         }
         
         if (endKernel == nFrames-1)
         {
             for (int j=0; j < tmpBicValues.size(); ++j)
             {
-                bicValues.push_back(tmpBicValues[j+startKernel]);
+                bicValues[startKernel + j] = tmpBicValues[startKernel + j];
             }
         }
     }
-    
+
     //////////////////////////////////
     // second pass - fine segmentation
-    
-    startKernel = currIdx = prevSeg = nextSeg = 0;
+    int prevSeg = 0, nextSeg = 0, currIdx = 0;
+    startKernel = 0;
     int halfSize = _size2 / 2;
 
     for (currIdx=0; currIdx < int(segmentation.size()); ++currIdx)
