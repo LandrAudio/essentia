@@ -62,7 +62,7 @@ void ConstantQ::compute() {
 
   SparseKernel *sk = m_sparseKernel;
 
-  constantQ.assign(_uK, 0.0 + 0.0j); // initialize output
+  constantQ.assign(_uK, complex<Real>(0.0, 0.0)); // initialize output
 
   const unsigned *fftbin = &(sk->_sparseKernelIs[0]);
   const unsigned *cqbin  = &(sk->_sparseKernelJs[0]);
@@ -101,8 +101,8 @@ void ConstantQ::configure() {
   SparseKernel *sk = new SparseKernel();
 
   // Initialise temporal kernel with zeros, twice length to deal with complex numbers
-  vector<complex<double> > hammingWindow(_FFTLength, 0.0 + 0.0j);
-  vector<complex<Real> > transfHammingWindowR(_FFTLength, 0.0 + 0.0j);
+  vector<complex<double> > hammingWindow(_FFTLength, complex<double>(0.0, 0.0));
+  vector<complex<Real> > transfHammingWindowR(_FFTLength, complex<Real>(0.0, 0.0));
 
   sk->_sparseKernelIs.reserve( _FFTLength*2 );
   sk->_sparseKernelJs.reserve( _FFTLength*2 );
@@ -117,7 +117,7 @@ void ConstantQ::configure() {
   for (unsigned k=_uK; k--; ) {
 
     // Compute a hamming window
-    hammingWindow.assign(_FFTLength, 0.0 + 0.0j);
+	  hammingWindow.assign(_FFTLength, complex<double>(0.0, 0.0));
     const unsigned hammingLength = (int) ceil( _dQ * _sampleRate / ( _minFrequency * pow(2,((double)(k))/(double)_binsPerOctave)));
     unsigned origin = _FFTLength/2 - hammingLength/2;
 

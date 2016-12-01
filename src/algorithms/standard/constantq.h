@@ -24,7 +24,7 @@
 #include "algorithmfactory.h"
 #include <complex>
 #include <vector>
-
+#include "essentiamath.h"
 
 namespace essentia {
 namespace standard {
