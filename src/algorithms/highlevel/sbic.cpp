@@ -253,30 +253,23 @@ void SBic::compute()
         bicChangeResult = bicChangeSearch(kernel, _inc1, startKernel, dmin);
         std::vector<Real> tmpBicValues(bicChangeResult.second);
         
-        if (i = bicChangeResult.first)
+        // Store bic values up to (and including) the peak
+        i = bicChangeResult.first;
+        int nToAdd = i != 0 ? i - startKernel + 1 : tmpBicValues.size();
+        for (int j = 0; j < nToAdd; ++j)
+        {
+            bicValues[startKernel + j] = tmpBicValues[j];
+        }
+
+        if (i != 0)
         {
             // Store the frame index and the value of the BIC change at the detected segment boundary
             segmentation.push_back(i);
             segValues.push_back(dmin);
 
-            // Store bic values up to (and including) the peak
-            int nToAdd = i - startKernel + 1;
-            for (int j=0; j < nToAdd; ++j)
-            {
-                bicValues[startKernel + j] = tmpBicValues[j];
-            }
-
             // Update kernel start and end
             startKernel = (i + _inc1);
             endKernel = startKernel - 1;
-        }
-        
-        if (endKernel == nFrames-1)
-        {
-            for (int j=0; j < tmpBicValues.size(); ++j)
-            {
-                bicValues[startKernel + j] = tmpBicValues[startKernel + j];
-            }
         }
     }
 
