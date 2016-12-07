@@ -253,7 +253,7 @@ void SBic::compute()
         bicChangeResult = bicChangeSearch(kernel, _inc1, startKernel, dmin);
         std::vector<Real> tmpBicValues(bicChangeResult.second);
         
-        // Store bic values up to (and including) the peak
+        // Store bic values over the whole kernel (no min was detected) or up to the index of the min
         i = bicChangeResult.first;
         int nToAdd = i != 0 ? i - startKernel + 1 : tmpBicValues.size();
         for (int j = 0; j < nToAdd; ++j)
