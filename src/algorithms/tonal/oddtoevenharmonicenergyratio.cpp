@@ -55,6 +55,8 @@ void OddToEvenHarmonicEnergyRatio::compute() {
     return;
   }
 
+  const Real maxRatio = 1000.;
+
   Real even_energy = 0.0;
   Real odd_energy = 0.0;
   Real prevFreq = frequencies[0];
@@ -69,10 +71,18 @@ void OddToEvenHarmonicEnergyRatio::compute() {
     else           odd_energy += magnitudes[i] * magnitudes[i];
   }
 
-  if (even_energy == 0.0) {
-     oddtoevenharmonicenergyratio = numeric_limits<Real>::max();
+  if (even_energy == 0.0 && odd_energy > 0.01) {
+     // oddtoevenharmonicenergyratio = numeric_limits<Real>::max();
+     oddtoevenharmonicenergyratio = maxRatio;
+  }
+  else if (even_energy == 0.0 && odd_energy < 0.01 ) {
+     oddtoevenharmonicenergyratio = 1;
   }
   else {
      oddtoevenharmonicenergyratio = odd_energy / even_energy;
+  }
+  if (oddtoevenharmonicenergyratio >= maxRatio) {
+    E_WARNING("clipping oddtoevenharmonicenergyratio to maximum allowed value");
+    oddtoevenharmonicenergyratio = maxRatio;
   }
 }
