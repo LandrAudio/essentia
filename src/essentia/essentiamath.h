@@ -297,7 +297,8 @@ std::vector<T> skewnessFrames(const std::vector<std::vector<T> >& frames) {
   for (uint j=0; j<vsize; j++) {
     m2[j] /= nframes;
     m3[j] /= nframes;
-    result[j] = m3[j] / pow(m2[j], (T)1.5);
+    if (m2[j] == (T)0.) result[j] = (T)0.;
+    else result[j] = m3[j] / pow(m2[j], (T)1.5);
   }
 
   return result;
@@ -328,11 +329,8 @@ std::vector<T> kurtosisFrames(const std::vector<std::vector<T> >& frames) {
   for (uint j=0; j<vsize; j++) {
     m2[j] /= nframes;
     m4[j] /= nframes;
-    result[j] = m4[j] / (m2[j]*m2[j]) - 3;
-    if (std::isnan(result[j]) || std::isinf(result[j]))
-    {
-      result[j] = 0;
-    }
+    if (m2[j] == (T)0.) result[j] = (T)(-3.);
+    else result[j] = m4[j] / (m2[j]*m2[j]) - 3;
   }
 
   return result;
@@ -463,8 +461,11 @@ template <typename T> T skewness(const std::vector<T>& array, const T mean) {
 
   m2 /= n; m3 /= n;
 
-  T result = m3 / pow(m2, (T)1.5);
-  if (std::isnan(result) || std::isinf(result)) return 0;
+  T result;
+  //if (std::isnan(result) || std::isinf(result)) return 0;
+  if (m2 == (T)0.) result = (T)0.;
+  else result = m3 / pow(m2, (T)1.5);
+
   return result;
 }
 
@@ -484,10 +485,14 @@ template <typename T> T kurtosis(const std::vector<T>& array, const T mean) {
 
   m2 /= n; m4 /= n;
 
-  T result = m4 / (m2*m2) - 3;
-  if (std::isnan(result) || std::isinf(result)) return 0;
+  T result;
+  //if (std::isnan(result) || std::isinf(result)) return 0;
+  if (m2 == (T)0.) result = (T)(-3.);
+  else result = m4 / (m2*m2) - 3;
+
   return result;
 }
+
 
 // returns the standard deviation of an array
 template <typename T> T stddev(const std::vector<T>& array, const T mean) {
@@ -526,6 +531,10 @@ inline Real amp2db(Real amplitude) {
 
 inline Real db2amp(Real amplitude) {
   return db2lin(0.5*amplitude);
+}
+
+inline Real linear(Real input) {
+  return input;
 }
 
 #ifdef OS_WIN32
@@ -627,10 +636,21 @@ inline Real mel2hz(Real mel) {
   return 700.0 * (exp(mel/1127.01048) - 1.0);
 }
 
+inline Real mel102hz(Real mel) {
+  return 700.0 * (pow(10.0, mel/2595.0) - 1.0);
+}
+
 inline Real hz2mel(Real hz) {
   return 1127.01048 * log(hz/700.0 + 1.0);
 }
 
+inline Real hz2mel10(Real hz) {
+  return 2595.0 * log10(hz/700.0 + 1.0);
+}
+
+inline Real hz2hz(Real hz){
+  return hz;
+}
 
 inline int argmin(const std::vector<Real>& input) {
   return std::min_element(input.begin(), input.end()) - input.begin();
