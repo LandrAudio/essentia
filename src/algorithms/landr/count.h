@@ -2,7 +2,7 @@
 #define ESSENTIA_LANDR_COUNT_H
 
 #include <memory>
-#include "streamingalgorithm.h"
+#include "streamingalgorithmcomposite.h"
 
 namespace essentia {
 namespace streaming {
