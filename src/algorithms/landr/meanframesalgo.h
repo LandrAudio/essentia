@@ -1,5 +1,5 @@
-#ifndef ESSENTIA_LANDR_MEAN_FRAMES_H
-#define ESSENTIA_LANDR_MEAN_FRAMES_H
+#ifndef ESSENTIA_LANDR_MEAN_FRAMES_ALGO_H
+#define ESSENTIA_LANDR_MEAN_FRAMES_ALGO_H
 
 #include <essentia/essentiamath.h>
 #include "streamingalgorithm.h"
@@ -7,19 +7,19 @@
 namespace essentia {
 namespace streaming {
 
-    class MeanFrames : public Algorithm {
+    class MeanFramesAlgo : public Algorithm {
         protected:
             Sink<std::vector<std::vector<Real> > > _input;
             Source<std::vector<Real> > _output;
 
         public:
-            MeanFrames() : Algorithm() {
+            MeanFramesAlgo() : Algorithm() {
                 declareInput(_input, 1, "input", "");
                 declareOutput(_output, 1, "output", "");
                 declareParameters();
             }
 
-            ~MeanFrames();
+            ~MeanFramesAlgo();
 
             AlgorithmStatus process();
         
@@ -37,4 +37,4 @@ namespace streaming {
 } // namespace streaming
 } // namespace essentia
 
-#endif ESSENTIA_LANDR_MEAN_FRAMES_H
+#endif ESSENTIA_LANDR_MEAN_FRAMES_ALGO_H

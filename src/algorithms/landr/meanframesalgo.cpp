@@ -1,13 +1,13 @@
-#include "meanframes.h"
+#include "meanframesalgo.h"
 
 namespace essentia {
 namespace streaming {
 
-    const char* MeanFrames::name = "MeanFrames";
-    const char* MeanFrames::category = "None";
-    const char* MeanFrames::description = "";
+    const char* MeanFramesAlgo::name = "MeanFramesAlgo";
+    const char* MeanFramesAlgo::category = "None";
+    const char* MeanFramesAlgo::description = "";
 
-    AlgorithmStatus MeanFrames::process() {
+    AlgorithmStatus MeanFramesAlgo::process() {
         auto status = acquireData();
         if (status != OK)
         {
