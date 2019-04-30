@@ -113,9 +113,9 @@ LinearRegression::process()
             // To determine the gradient, we do a linear least squares regression fitting a line to the data.
             // Since our x axis values are equally spaced we can simplify a bit and not have to pass in the x values.
             linearRegression(vecIn[i], intersection, gradient, sigma_intersection, sigma_gradient, chi2);
-            COUT << "gradient y = " << gradient << " intersection x + " <<  intersection << std::endl;
-            COUT << "gradient stddev = " << sigma_gradient << " intersection stddev = " << sigma_intersection << std::endl;
-            COUT << "chi2 = " << chi2 << std::endl;
+            std::cout << "gradient y = " << gradient << " intersection x + " <<  intersection << std::endl;
+            std::cout << "gradient stddev = " << sigma_gradient << " intersection stddev = " << sigma_intersection << std::endl;
+            std::cout << "chi2 = " << chi2 << std::endl;
             gradOut[i] = gradient;
             interOut[i] = intersection;
         }

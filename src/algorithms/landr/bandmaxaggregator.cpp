@@ -26,7 +26,7 @@ AlgorithmStatus BandMaxAggregator::process()
     int emittedLength = 0;
     std::vector<Real>::size_type nBands = bandsIn[0].size();
 
-    //COUT << "In process lengthInFrames " << lengthInFrames << " exactFilterWidth " << exactFilterWidth << std::endl;
+    std::cout << "In process lengthInFrames " << lengthInFrames << " exactFilterWidth " << exactFilterWidth << std::endl;
 
     int inputIndex = 0; // The index into the bands to draw from next.
     int outputIndex = 0; // The index to the band to write next.
@@ -34,7 +34,7 @@ AlgorithmStatus BandMaxAggregator::process()
     while (exactOutputLength < lengthInFrames + exactFilterWidth && outputIndex < _nTimesPerBand) {
         // Determine the number of frames to check for each max filter. Using int() creates a floor() function.
         int filterWidth = int(exactOutputLength - emittedLength);
-        //COUT << "In process exactOutputLength " << exactOutputLength << " lengthInFrames " << lengthInFrames << " filterWidth " << filterWidth << std::endl;
+        std::cout << "In process exactOutputLength " << exactOutputLength << " lengthInFrames " << lengthInFrames << " filterWidth " << filterWidth << std::endl;
 
         if (exactFilterWidth > 1.0) {  // i.e. we are compressing data using the max filter:
             // run the max filter over the filter width for each band.
@@ -48,11 +48,11 @@ AlgorithmStatus BandMaxAggregator::process()
                     }
                 }
             }
-            //COUT << "In process writing out bandMaxes for position " << outputIndex << std::endl;
+            std::cout << "In process writing out bandMaxes for position " << outputIndex << std::endl;
             bandsOut[outputIndex++] = bandMaxes;
         }
         else {      // we are expanding data using duplication:
-            //COUT << "In process writing out band inputIndex " << inputIndex << " to outputIndex " << outputIndex << std::endl;
+            std::cout << "In process writing out band inputIndex " << inputIndex << " to outputIndex " << outputIndex << std::endl;
             bandsOut[outputIndex++] = bandsIn[inputIndex];
             inputIndex += filterWidth;             // Only begin emitting a new band if we have advanced enough to do so (filterWidth > 0).
         }
