@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "streamingalgorithmcomposite.h"
+#include <essentia/streaming/algorithms/vectoroutput.h>
 
 namespace essentia {
 namespace streaming {
