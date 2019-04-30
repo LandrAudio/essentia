@@ -1,15 +1,3 @@
-//=============================================================================
-//
-// Copyright(c) 2019 LANDR Audio Inc. All rights reserved.
-//
-// These coded instructions, statements, and computer programs contain
-// proprietary information written by LANDR and
-// are protected by copyright law. They may not be disclosed
-// to third parties or copied or duplicated in any form, in whole or
-// in part, without the prior written consent of LANDR.
-//
-//=============================================================================
-
 #ifndef ESSENTIA_LANDR_BAND_MAX_AGGREGATOR_H
 #define ESSENTIA_LANDR_BAND_MAX_AGGREGATOR_H
 
