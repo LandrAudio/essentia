@@ -32,13 +32,13 @@ namespace streaming {
 
     protected:
         
-        SinkProxy<std::vector<essentia::Real> > _input;
-        Source<essentia::Real> _output;
+        SinkProxy<std::vector<Real> > _input;
+        Source<Real> _output;
         
     private:
 
         std::shared_ptr<Algorithm> _vectorOutput;
-        std::vector<std::vector<essentia::Real>> _accu;
+        std::vector<std::vector<Real>> _accu;
 
     };
 

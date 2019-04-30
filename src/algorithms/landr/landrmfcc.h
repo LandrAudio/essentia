@@ -27,8 +27,8 @@ namespace streaming {
     protected:
         
         
-        Sink<std::vector<essentia::Real> > _magnitudeSpectrumInput;
-        Source<std::vector<essentia::Real> > _mfccOutput;
+        Sink<std::vector<Real> > _magnitudeSpectrumInput;
+        Source<std::vector<Real> > _mfccOutput;
         
     private:
         void GenerateMFCCFilters(int magnitudeSpectrumSize, double sampleRate);

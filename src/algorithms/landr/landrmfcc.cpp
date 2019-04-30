@@ -3,13 +3,13 @@
 namespace essentia {
 namespace streaming {
 
-const int LANDR::LandrMFCC::NUM_COEFFICIENTS = 13;
-const char* LANDR::LandrMFCC::name = "LandrMFCC";
-const char* LANDR::LandrMFCC::category = "None";
-const char* LANDR::LandrMFCC::description = "";
+const int LandrMFCC::NUM_COEFFICIENTS = 13;
+const char* LandrMFCC::name = "LandrMFCC";
+const char* LandrMFCC::category = "None";
+const char* LandrMFCC::description = "";
 //"Computes MFCC coefficients. First, the mel spectrum is computed using 40 triangular bands (13 linearly spaced and 27 logarithmically spaced). The mel spectrum is then analyzed using the Discrete Cosine Transform ( https://en.wikipedia.org/wiki/Discrete_cosine_transform#DCT-II ) to extract 13 MFCC coefficients"
 
-LANDR::LandrMFCC::LandrMFCC()
+LandrMFCC::LandrMFCC()
 : Algorithm(), _numCoeffs(NUM_COEFFICIENTS), _magnitudeSizeInSamples(0)
 {
     declareInput(_magnitudeSpectrumInput, 1, "magnitude", "Magnitude spectrum.");
@@ -17,25 +17,25 @@ LANDR::LandrMFCC::LandrMFCC()
     declareParameters();
 }
 
-LANDR::LandrMFCC::~LandrMFCC()
+LandrMFCC::~LandrMFCC()
 {
 }
 
 void
-LANDR::LandrMFCC::Register()
+LandrMFCC::Register()
 {
     AlgorithmFactory::Registrar<LandrMFCC> LandrMFCC;
 }
 
 void
-LANDR::LandrMFCC::declareParameters()
+LandrMFCC::declareParameters()
 {
     declareParameter("sampleRate", "the sample rate", "(0,inf)", 44100.0);
     declareParameter("magnitudeSpectrumSize", "the number of bins in the input magnitude spectrum", "(0,inf)", 513);
 }
 
 void
-LANDR::LandrMFCC::configure()
+LandrMFCC::configure()
 {
     _sampleRate = parameter("sampleRate").toDouble();
     _magnitudeSizeInSamples = parameter("magnitudeSpectrumSize").toInt();
@@ -45,7 +45,7 @@ LANDR::LandrMFCC::configure()
 }
 
 AlgorithmStatus
-LANDR::LandrMFCC::process()
+LandrMFCC::process()
 {
     auto status = acquireData();
     if (status != OK)
@@ -94,7 +94,7 @@ LANDR::LandrMFCC::process()
 }
 
 void
-LANDR::LandrMFCC::GenerateMFCCFilters(int fftSize, double sampleRate)
+LandrMFCC::GenerateMFCCFilters(int fftSize, double sampleRate)
 {
     const double fStart = 133.3333;
     const int numLinFilters = 13;
@@ -156,7 +156,7 @@ LANDR::LandrMFCC::GenerateMFCCFilters(int fftSize, double sampleRate)
 }
 
 void
-LANDR::LandrMFCC::GenerateDCTMatrix(int numBands, int numCoeffs)
+LandrMFCC::GenerateDCTMatrix(int numBands, int numCoeffs)
 {
     std::vector<double> c, n;
     

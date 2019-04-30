@@ -3,11 +3,11 @@
 namespace essentia {
 namespace streaming {
 
-const char* LANDR::LinearRegression::name = "LinearRegression";
-const char* LANDR::LinearRegression::category = "Statistics";
-const char* LANDR::LinearRegression::description = "Returns the gradient and intersection of a linear regression fit to the input vector";
+const char* LinearRegression::name = "LinearRegression";
+const char* LinearRegression::category = "Statistics";
+const char* LinearRegression::description = "Returns the gradient and intersection of a linear regression fit to the input vector";
 
-LANDR::LinearRegression::LinearRegression()
+LinearRegression::LinearRegression()
 : Algorithm()
 {
     declareInput(_vectorInput, 1, "input", "Input vector");
@@ -17,23 +17,23 @@ LANDR::LinearRegression::LinearRegression()
     declareParameters();
 }
 
-LANDR::LinearRegression::~LinearRegression()
+LinearRegression::~LinearRegression()
 {
 }
 
 void
-LANDR::LinearRegression::Register()
+LinearRegression::Register()
 {
     AlgorithmFactory::Registrar<LinearRegression> LinearRegression;
 }
 
 void
-LANDR::LinearRegression::declareParameters()
+LinearRegression::declareParameters()
 {
 }
 
 void
-LANDR::LinearRegression::configure()
+LinearRegression::configure()
 {
 }
 
@@ -43,15 +43,15 @@ LANDR::LinearRegression::configure()
 // Chi-squared is normalized to unit standard deviation on all points.
 // Derived from fit() from Numerical Recipes in C++ 2nd Edition, p670.
 void
-LANDR::LinearRegression::linearRegression(const std::vector<essentia::Real> &y,
-                                          essentia::Real &a,
-                                          essentia::Real &b,
-                                          essentia::Real &sigma_a,
-                                          essentia::Real &sigma_b,
-                                          essentia::Real &chi2)
+LinearRegression::linearRegression(const std::vector<Real> &y,
+                                          Real &a,
+                                          Real &b,
+                                          Real &sigma_a,
+                                          Real &sigma_b,
+                                          Real &chi2)
 {
     unsigned int vectorIndex;
-    essentia::Real t, sxoss, sx = 0.0, sy = 0.0, st2 = 0.0, sigma_data;
+    Real t, sxoss, sx = 0.0, sy = 0.0, st2 = 0.0, sigma_data;
     unsigned vectorSize = y.size();
     
     b = 0.0;
@@ -75,7 +75,7 @@ LANDR::LinearRegression::linearRegression(const std::vector<essentia::Real> &y,
     // Calculate chi-squared from the solved a & b values against the original data.
     chi2 = 0.0;
     for (vectorIndex = 0; vectorIndex < vectorSize; vectorIndex++) {
-        essentia::Real residual = y[vectorIndex] - a - b * vectorIndex;
+        Real residual = y[vectorIndex] - a - b * vectorIndex;
         chi2 += residual * residual;
     }
     // For unweighted data, evaluate typical sigma using chi2, and adjust the standard deviations.
@@ -85,7 +85,7 @@ LANDR::LinearRegression::linearRegression(const std::vector<essentia::Real> &y,
 }
 
 AlgorithmStatus
-LANDR::LinearRegression::process()
+LinearRegression::process()
 {
     auto status = acquireData();
     if (status != OK)
@@ -96,18 +96,18 @@ LANDR::LinearRegression::process()
     }
     
     // Grab frames from stream, as requested in constructor
-    const std::vector<std::vector<essentia::Real>>& vecIn = _vectorInput.tokens();
-    std::vector<essentia::Real>& gradOut = _gradientOutput.tokens();
-    std::vector<essentia::Real>& interOut = _intersectionOutput.tokens();
+    const std::vector<std::vector<Real>>& vecIn = _vectorInput.tokens();
+    std::vector<Real>& gradOut = _gradientOutput.tokens();
+    std::vector<Real>& interOut = _intersectionOutput.tokens();
 
     // Loop frames in stream
     for (int i = 0; i < vecIn.size() && i < gradOut.size(); ++i)
     {
-        essentia::Real gradient = 0.0; // default is that of zero gradient, i.e. no changing values.
-        essentia::Real intersection;
-        essentia::Real sigma_intersection;
-        essentia::Real sigma_gradient;
-        essentia::Real chi2;
+        Real gradient = 0.0; // default is that of zero gradient, i.e. no changing values.
+        Real intersection;
+        Real sigma_intersection;
+        Real sigma_gradient;
+        Real chi2;
 
         if (vecIn[i].size() >= 2) { // ensure the number of data points exceed the number of variables in a line equation.
             // To determine the gradient, we do a linear least squares regression fitting a line to the data.

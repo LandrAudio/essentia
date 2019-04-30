@@ -3,43 +3,43 @@
 namespace essentia {
 namespace streaming {
 
-const char* LANDR::Diagnostic::name = "Diagnostic";
-const char* LANDR::Diagnostic::category = "None";
-const char* LANDR::Diagnostic::description = "Dumps out it's input to a log";
+const char* Diagnostic::name = "Diagnostic";
+const char* Diagnostic::category = "None";
+const char* Diagnostic::description = "Dumps out it's input to a log";
 
-LANDR::Diagnostic::Diagnostic()
+Diagnostic::Diagnostic()
 : Algorithm()
 {
     declareInput(_frameInput, 1, "frame", "frame");
     declareParameters();
 }
 
-LANDR::Diagnostic::~Diagnostic()
+Diagnostic::~Diagnostic()
 {
 }
 
 void
-LANDR::Diagnostic::Register()
+Diagnostic::Register()
 {
     AlgorithmFactory::Registrar<Diagnostic> diagnostic;
 }
 
 void
-LANDR::Diagnostic::configure()
+Diagnostic::configure()
 {
     _startSample = parameter("startSample").toInt();
     _frameSizeInSamples = parameter("size").toInt();
 }
 
 void
-LANDR::Diagnostic::declareParameters()
+Diagnostic::declareParameters()
 {
     declareParameter("startSample", "the sample to begin printing from", "[0,inf)", 0);
     declareParameter("size", "the size of the frame in samples", "(0,inf)", 1024);
 }
 
 AlgorithmStatus
-LANDR::Diagnostic::process()
+Diagnostic::process()
 {
     auto status = acquireData();
     if (status != OK)
@@ -50,7 +50,7 @@ LANDR::Diagnostic::process()
     }
     
     // Grab frames from stream, as requested in constructor
-    const std::vector<std::vector<essentia::Real>>& frameInput = _frameInput.tokens();
+    const std::vector<std::vector<Real>>& frameInput = _frameInput.tokens();
     
     // Loop frames in stream
     for (int i = 0; i < frameInput.size(); ++i)

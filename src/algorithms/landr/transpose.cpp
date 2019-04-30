@@ -3,11 +3,11 @@
 namespace essentia {
 namespace streaming {
 
-const char* LANDR::Transpose::name = "Transpose";
-const char* LANDR::Transpose::category = "None";
-const char* LANDR::Transpose::description = "";
+const char* Transpose::name = "Transpose";
+const char* Transpose::category = "None";
+const char* Transpose::description = "";
 
-LANDR::Transpose::Transpose()
+Transpose::Transpose()
     : Algorithm()
 {
     declareInput(_input, 1, "input", "");
@@ -15,25 +15,25 @@ LANDR::Transpose::Transpose()
     declareParameters();
 }
 
-LANDR::Transpose::~Transpose()
+Transpose::~Transpose()
 {}
 
 void
-LANDR::Transpose::Register()
+Transpose::Register()
 {
     AlgorithmFactory::Registrar<Transpose> Transpose;
 }
 
 void
-LANDR::Transpose::configure()
+Transpose::configure()
 {}
 
 void
-LANDR::Transpose::declareParameters()
+Transpose::declareParameters()
 {}
 
 AlgorithmStatus
-LANDR::Transpose::process()
+Transpose::process()
 {
     auto status = acquireData();
     if (status != OK)
@@ -44,26 +44,26 @@ LANDR::Transpose::process()
     }
 
     // Grab frames from stream, as requested in constructor
-    const std::vector<std::vector<essentia::Real > >& inputFrames = _input.tokens();
+    const std::vector<std::vector<Real > >& inputFrames = _input.tokens();
 
     // Loop frames in stream
     for (int i = 0; i < inputFrames.size(); ++i)
     {
         // Allocate memory at the output
-        std::vector<essentia::Real> outputFrame(inputFrames[i].size());
+        std::vector<Real> outputFrame(inputFrames[i].size());
 
         // Find max index
-        int idxMax = essentia::argmax(inputFrames[i]);
+        int idxMax = argmax(inputFrames[i]);
         
         // Duplicate vector before transpose
-        std::vector<essentia::Real> hpcp_bak = inputFrames[i];
+        std::vector<Real> hpcp_bak = inputFrames[i];
         
         // Transpose [AB] -> [BA]
         for (int j=idxMax; j<(int)hpcp_bak.size(); j++)
         {
             outputFrame[j-idxMax] = hpcp_bak[j];
         }
-        std::vector<essentia::Real>::size_type offset = hpcp_bak.size() - idxMax;
+        std::vector<Real>::size_type offset = hpcp_bak.size() - idxMax;
         for (int j=0; j<idxMax; j++)
         {
             outputFrame[j+offset] = hpcp_bak[j];

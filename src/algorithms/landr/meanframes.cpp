@@ -3,11 +3,11 @@
 namespace essentia {
 namespace streaming {
 
-const char* LANDR::MeanFrames::name = "MeanFrames";
-const char* LANDR::MeanFrames::category = "None";
-const char* LANDR::MeanFrames::description = "";
+const char* MeanFrames::name = "MeanFrames";
+const char* MeanFrames::category = "None";
+const char* MeanFrames::description = "";
 
-LANDR::MeanFrames::MeanFrames()
+MeanFrames::MeanFrames()
     : Algorithm()
 {
     declareInput(_input, 1, "input", "");
@@ -15,25 +15,25 @@ LANDR::MeanFrames::MeanFrames()
     declareParameters();
 }
 
-LANDR::MeanFrames::~MeanFrames()
+MeanFrames::~MeanFrames()
 {}
 
 void
-LANDR::MeanFrames::Register()
+MeanFrames::Register()
 {
     AlgorithmFactory::Registrar<MeanFrames> meanFrames;
 }
 
 void
-LANDR::MeanFrames::configure()
+MeanFrames::configure()
 {}
 
 void
-LANDR::MeanFrames::declareParameters()
+MeanFrames::declareParameters()
 {}
 
 AlgorithmStatus
-LANDR::MeanFrames::process()
+MeanFrames::process()
 {
     auto status = acquireData();
     if (status != OK)
@@ -43,13 +43,13 @@ LANDR::MeanFrames::process()
         return NO_INPUT;
     }
 
-    const std::vector<std::vector<std::vector<essentia::Real > > >& frames = _input.tokens();
-    std::vector<std::vector<essentia::Real > >& means = _output.tokens();
+    const std::vector<std::vector<std::vector<Real > > >& frames = _input.tokens();
+    std::vector<std::vector<Real > >& means = _output.tokens();
 
     for (int i = 0; i < frames.size() && i < means.size(); ++i)
     {
         auto frame = frames[i];
-        means[i] = essentia::meanFrames(frame);        
+        means[i] = meanFrames(frame);        
     }
 
     releaseData();

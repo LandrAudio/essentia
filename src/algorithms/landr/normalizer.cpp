@@ -3,11 +3,11 @@
 namespace essentia {
 namespace streaming {
 
-const char* LANDR::Normalizer::name = "Normalizer";
-const char* LANDR::Normalizer::category = "None";
-const char* LANDR::Normalizer::description = "";
+const char* Normalizer::name = "Normalizer";
+const char* Normalizer::category = "None";
+const char* Normalizer::description = "";
 
-LANDR::Normalizer::Normalizer()
+Normalizer::Normalizer()
     : Algorithm()
 {
     declareInput(_input, 1, "input", "");
@@ -15,25 +15,25 @@ LANDR::Normalizer::Normalizer()
     declareParameters();
 }
 
-LANDR::Normalizer::~Normalizer()
+Normalizer::~Normalizer()
 {}
 
 void
-LANDR::Normalizer::Register()
+Normalizer::Register()
 {
     AlgorithmFactory::Registrar<Normalizer> Normalizer;
 }
 
 void
-LANDR::Normalizer::configure()
+Normalizer::configure()
 {}
 
 void
-LANDR::Normalizer::declareParameters()
+Normalizer::declareParameters()
 {}
 
 AlgorithmStatus
-LANDR::Normalizer::process()
+Normalizer::process()
 {
     auto status = acquireData();
     if (status != OK)
@@ -43,13 +43,13 @@ LANDR::Normalizer::process()
         return NO_INPUT;
     }
 
-    const std::vector<std::vector<essentia::Real > >& inputFrames = _input.tokens();
-    std::vector<std::vector<essentia::Real > >& outputFrames = _output.tokens();
+    const std::vector<std::vector<Real > >& inputFrames = _input.tokens();
+    std::vector<std::vector<Real > >& outputFrames = _output.tokens();
 
     for (int i = 0; i < inputFrames.size() && i < outputFrames.size(); ++i)
     {
         outputFrames[i] = inputFrames[i];
-        essentia::normalize(outputFrames[i]);
+        normalize(outputFrames[i]);
     }
 
     releaseData();

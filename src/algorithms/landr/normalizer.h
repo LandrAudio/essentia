@@ -27,8 +27,8 @@ namespace streaming {
         
     protected:
         
-        Sink<std::vector<essentia::Real> > _input;
-        Source<std::vector<essentia::Real> > _output;
+        Sink<std::vector<Real> > _input;
+        Source<std::vector<Real> > _output;
         
     private:
 

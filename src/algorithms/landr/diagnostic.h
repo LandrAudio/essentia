@@ -26,7 +26,7 @@ namespace streaming {
         
     protected:
         
-        Sink<std::vector<essentia::Real> > _frameInput;
+        Sink<std::vector<Real> > _frameInput;
 
     private:
         int _startSample;

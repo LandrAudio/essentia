@@ -27,17 +27,17 @@ namespace streaming {
         
     protected:
         
-        Sink<std::vector<essentia::Real> > _vectorInput;
-        Source<essentia::Real> _gradientOutput;
-        Source<essentia::Real> _intersectionOutput;
+        Sink<std::vector<Real> > _vectorInput;
+        Source<Real> _gradientOutput;
+        Source<Real> _intersectionOutput;
 
     private:
-        void linearRegression(const std::vector<essentia::Real> &y,
-                              essentia::Real &a,
-                              essentia::Real &b,
-                              essentia::Real &sigma_a,
-                              essentia::Real &sigma_b,
-                              essentia::Real &chi2);
+        void linearRegression(const std::vector<Real> &y,
+                              Real &a,
+                              Real &b,
+                              Real &sigma_a,
+                              Real &sigma_b,
+                              Real &chi2);
     };
 
 } // namespace streaming

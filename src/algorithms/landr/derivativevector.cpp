@@ -3,11 +3,11 @@
 namespace essentia {
 namespace streaming {
 
-const char* LANDR::DerivativeVector::name = "DerivativeVector";
-const char* LANDR::DerivativeVector::category = "None";
-const char* LANDR::DerivativeVector::description = "";
+const char* DerivativeVector::name = "DerivativeVector";
+const char* DerivativeVector::category = "None";
+const char* DerivativeVector::description = "";
 
-LANDR::DerivativeVector::DerivativeVector()
+DerivativeVector::DerivativeVector()
     : Algorithm()
 {
     declareInput(_input, 1, "input", "");
@@ -15,25 +15,25 @@ LANDR::DerivativeVector::DerivativeVector()
     declareParameters();
 }
 
-LANDR::DerivativeVector::~DerivativeVector()
+DerivativeVector::~DerivativeVector()
 {}
 
 void
-LANDR::DerivativeVector::Register()
+DerivativeVector::Register()
 {
     AlgorithmFactory::Registrar<DerivativeVector> DerivativeVector;
 }
 
 void
-LANDR::DerivativeVector::configure()
+DerivativeVector::configure()
 {}
 
 void
-LANDR::DerivativeVector::declareParameters()
+DerivativeVector::declareParameters()
 {}
 
 AlgorithmStatus
-LANDR::DerivativeVector::process()
+DerivativeVector::process()
 {
     auto status = acquireData();
     if (status != OK)
