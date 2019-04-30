@@ -1,36 +1,36 @@
 #ifndef ESSENTIA_LANDR_NORMALIZER_H
 #define ESSENTIA_LANDR_NORMALIZER_H
 
-#include <memory>
 #include <essentia/essentiamath.h>
 #include "streamingalgorithm.h"
 
 namespace essentia {
 namespace streaming {
 
-    class Normalizer : public Algorithm
-    {
-    public:
+    class Normalizer : public Algorithm {
+        protected:
+            Sink<std::vector<Real> > _input;
+            Source<std::vector<Real> > _output;
+            
+        public:
+            Normalizer() : Algorithm() {
+                declareInput(_input, 1, "input", "");
+                declareOutput(_output, 1, "output", "");
+                declareParameters();
+            }
+            
+            ~Normalizer() {}
+
+            AlgorithmStatus process();
         
-        Normalizer();
-        virtual ~Normalizer();       
-       
-        void declareParameters() override;
-        void configure() override;
-        AlgorithmStatus process() override;
-        
-        static const char* name;
-        static const char* category;
-        static const char* description;
-    
-        static void Register();
-        
-    protected:
-        
-        Sink<std::vector<Real> > _input;
-        Source<std::vector<Real> > _output;
-        
-    private:
+            void declareParameters() {}
+            void configure() {}
+            
+            static const char* name;
+            static const char* category;
+            static const char* description;
+            
+        private:
 
     };
 

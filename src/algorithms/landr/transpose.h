@@ -8,29 +8,30 @@
 namespace essentia {
 namespace streaming {
 
-    class Transpose : public Algorithm
-    {
-    public:
+    class Transpose : public Algorithm {
+        protected:
+            Sink<std::vector<Real> > _input;
+            Source<std::vector<Real> > _output;
+            
+        public:
+            Transpose() : Algorithm() {
+                declareInput(_input, 1, "input", "");
+                declareOutput(_output, "output", "");
+                declareParameters();
+            }
+            
+            ~Transpose() {}
+
+            AlgorithmStatus process();
         
-        Transpose();
-        virtual ~Transpose();       
-       
-        void declareParameters() override;
-        void configure() override;
-        AlgorithmStatus process() override;
-        
-        static const char* name;
-        static const char* category;
-        static const char* description;
-    
-        static void Register();
-        
-    protected:
-        
-        Sink<std::vector<Real> > _input;
-        Source<std::vector<Real> > _output;
-        
-    private:
+            void declareParameters() {}
+            void configure() {}
+            
+            static const char* name;
+            static const char* category;
+            static const char* description;
+            
+        private:
 
     };
 

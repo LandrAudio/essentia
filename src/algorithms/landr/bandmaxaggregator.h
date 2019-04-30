@@ -6,8 +6,7 @@
 namespace essentia {
 namespace streaming {
 
-    class BandMaxAggregator : public Algorithm
-    {
+    class BandMaxAggregator : public Algorithm {
         protected:
             Sink<std::vector<std::vector<Real> > > _bandsInput;
             Source<std::vector<Real> > _bandsOutput;
