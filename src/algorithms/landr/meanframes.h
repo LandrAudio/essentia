@@ -7,19 +7,19 @@
 namespace essentia {
 namespace streaming {
 
-    class MeanFramesAlgo : public Algorithm {
+    class MeanFrames : public Algorithm {
         protected:
-            Sink<std::vector<std::vector<Real> > > _input;
-            Source<std::vector<Real> > _output;
+            Sink<std::vector<std::vector<Real>>> _input;
+            Source<std::vector<Real>> _output;
 
         public:
-            MeanFramesAlgo() : Algorithm() {
+            MeanFrames() : Algorithm() {
                 declareInput(_input, 1, "input", "");
                 declareOutput(_output, 1, "output", "");
                 declareParameters();
             }
 
-            ~MeanFramesAlgo();
+            ~MeanFrames() {}
 
             AlgorithmStatus process();
         

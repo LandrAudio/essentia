@@ -1,13 +1,13 @@
-#include "meanframesalgo.h"
+#include "meanframes.h"
 
 namespace essentia {
 namespace streaming {
 
-    const char* MeanFramesAlgo::name = "MeanFramesAlgo";
-    const char* MeanFramesAlgo::category = "None";
-    const char* MeanFramesAlgo::description = "";
+    const char* MeanFrames::name = "MeanFrames";
+    const char* MeanFrames::category = "None";
+    const char* MeanFrames::description = "";
 
-    AlgorithmStatus MeanFramesAlgo::process() {
+    AlgorithmStatus MeanFrames::process() {
         auto status = acquireData();
         if (status != OK)
         {
@@ -16,8 +16,8 @@ namespace streaming {
             return NO_INPUT;
         }
 
-        const std::vector<std::vector<std::vector<Real > > >& frames = _input.tokens();
-        std::vector<std::vector<Real > >& means = _output.tokens();
+        const std::vector<std::vector<std::vector<Real>>>& frames = _input.tokens();
+        std::vector<std::vector<Real>>& means = _output.tokens();
 
         for (int i = 0; i < frames.size() && i < means.size(); ++i)
         {
