@@ -1,27 +1,27 @@
-#include "count.h"
+// #include "count.h"
 
-namespace essentia {
-namespace streaming {
+// namespace essentia {
+// namespace streaming {
 
-    const char* Count::name = "Count";
-    const char* Count::category = "None";
-    const char* Count::description = "";
+//     const char* Count::name = "Count";
+//     const char* Count::category = "None";
+//     const char* Count::description = "";
 
-    AlgorithmStatus Count::process() {
-        if (!shouldStop()) return PASS;
+//     AlgorithmStatus Count::process() {
+//         if (!shouldStop()) return PASS;
 
-        float count = 0;
+//         float count = 0;
 
-        for (auto data : _accu)
-        {
-            count += data.size();
-        }
+//         for (auto data : _accu)
+//         {
+//             count += data.size();
+//         }
 
-        _output.push(count);
+//         _output.push(count);
 
-        return FINISHED;
+//         return FINISHED;
 
-    }
+//     }
 
-} // namespace streaming
-} // namespace essentia
+// } // namespace streaming
+// } // namespace essentia
