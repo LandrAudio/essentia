@@ -1,6 +1,7 @@
 #ifndef ESSENTIA_LANDR_DIAGNOSTIC_H
 #define ESSENTIA_LANDR_DIAGNOSTIC_H
 
+#include "landrcommon.h"
 #include "streamingalgorithm.h"
 
 namespace essentia {

@@ -1,6 +1,7 @@
 #ifndef ESSENTIA_LANDR_BAND_MAX_AGGREGATOR_H
 #define ESSENTIA_LANDR_BAND_MAX_AGGREGATOR_H
 
+#include "landrcommon.h"
 #include "streamingalgorithm.h"
 
 namespace essentia {

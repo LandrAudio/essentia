@@ -27,7 +27,7 @@ namespace streaming {
                 // We specifically do not declare this as COUT because to do so will then render diagnostics useless
                 // unless the entire library is recompiled with COUT enabled. We want to be able to add diagnostics
                 // to a running system which may not have been compiled with COUT enabled.
-                std::cout << "Diagnostic frame[" << i << "][" << sampleIndex << "] = " << frameInput[i][sampleIndex] << std::endl;
+                COUT << "Diagnostic frame[" << i << "][" << sampleIndex << "] = " << frameInput[i][sampleIndex] << std::endl;
             }
         }
 

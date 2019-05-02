@@ -2,6 +2,7 @@
 #define ESSENTIA_LANDR_LINEAR_REGRESSION_H
 
 #include <math.h>       /* sqrt */
+#include "landrcommon.h"
 #include "streamingalgorithm.h"
 
 namespace essentia {
