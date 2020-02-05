@@ -62,7 +62,7 @@ namespace streaming {
         }
         
         // Grab frames from stream, as requested in constructor
-        const std::vector<std::vector<Real>>& vecIn = _vectorInput.tokens();
+        const std::vector<std::vector<Real> >& vecIn = _vectorInput.tokens();
         std::vector<Real>& gradOut = _gradientOutput.tokens();
         std::vector<Real>& interOut = _intersectionOutput.tokens();
 

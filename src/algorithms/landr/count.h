@@ -18,7 +18,7 @@ namespace streaming {
                 declareInput(_input, "input", "");
                 declareOutput(_output, 0, "output", "");
 
-                _vectorOutput = std::make_shared<VectorOutput<std::vector<Real>>>(&_accu);
+                _vectorOutput = std::make_shared<VectorOutput<std::vector<Real> > >(&_accu);
                 _input >> _vectorOutput->input("data");
             }
 
@@ -40,7 +40,7 @@ namespace streaming {
 
         private:
             std::shared_ptr<Algorithm> _vectorOutput;
-            std::vector<std::vector<Real>> _accu;
+            std::vector<std::vector<Real> > _accu;
 
     };
 

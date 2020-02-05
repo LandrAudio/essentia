@@ -16,8 +16,8 @@ namespace streaming {
             return NO_INPUT;
         }
 
-        const std::vector<std::vector<std::vector<Real>>>& frames = _input.tokens();
-        std::vector<std::vector<Real>>& means = _output.tokens();
+        const std::vector<std::vector<std::vector<Real> > >& frames = _input.tokens();
+        std::vector<std::vector<Real> >& means = _output.tokens();
 
         for (int i = 0; i < frames.size() && i < means.size(); ++i)
         {
