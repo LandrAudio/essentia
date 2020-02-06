@@ -19,8 +19,8 @@ namespace streaming {
         }
 
         // Grab frames from stream, as requested in constructor
-        const std::vector<std::vector<essentia::Real>>& spec = _magnitudeSpectrumInput.tokens();
-        std::vector<std::vector<essentia::Real>>& mfcc = _mfccOutput.tokens();
+        const std::vector<std::vector<essentia::Real> >& spec = _magnitudeSpectrumInput.tokens();
+        std::vector<std::vector<essentia::Real> >& mfcc = _mfccOutput.tokens();
         
         // Loop frames in stream
         for (int i = 0; i < spec.size() && i < mfcc.size(); ++i)

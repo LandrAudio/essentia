@@ -17,7 +17,7 @@ namespace streaming {
         }
         
         // Grab frames from stream, as requested in constructor
-        const std::vector<std::vector<Real>>& frameInput = _frameInput.tokens();
+        const std::vector<std::vector<Real> >& frameInput = _frameInput.tokens();
         
         // Loop frames in stream
         for (int i = 0; i < frameInput.size(); ++i)

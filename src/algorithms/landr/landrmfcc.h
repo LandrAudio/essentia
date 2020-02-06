@@ -49,8 +49,8 @@ namespace streaming {
             int _magnitudeSizeInSamples;
             double _sampleRate;
             
-            std::vector<std::vector<double>> _H;
-            std::vector<std::vector<double>> _T;
+            std::vector<std::vector<double> > _H;
+            std::vector<std::vector<double> > _T;
     };
 
 } // namespace streaming

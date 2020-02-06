@@ -9,8 +9,8 @@ namespace streaming {
 
     class MeanFrames : public Algorithm {
         protected:
-            Sink<std::vector<std::vector<Real>>> _input;
-            Source<std::vector<Real>> _output;
+            Sink<std::vector<std::vector<Real> > > _input;
+            Source<std::vector<Real> > _output;
 
         public:
             MeanFrames() : Algorithm() {
