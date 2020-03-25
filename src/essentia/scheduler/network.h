@@ -267,6 +267,12 @@ class ESSENTIA_API Network {
 };
 
 /**
+* Delete the algorithm together with its all visible dependencies without 
+* creating a network object.
+*/
+void deleteNetwork(const streaming::Algorithm* algo);
+
+/**
  * Prints the fill state of all the buffers in the last created network.
  */
 void printNetworkBufferFillState();
