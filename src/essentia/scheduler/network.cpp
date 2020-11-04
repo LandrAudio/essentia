@@ -97,15 +97,6 @@ map<string, vector<Algorithm*> > mapVisibleDependencies(const Algorithm* algo) {
   return result;
 }
 
-void deleteNetwork(const streaming::Algorithm* algo) {
-  set<Algorithm*> dependencies = visibleDependencies(algo, false);
-
-  for (set<Algorithm*>::iterator it = dependencies.begin(); it != dependencies.end(); ++it) {
-    delete *it;
-  }
-  delete algo;
-}
-
 template <typename NodeType>
 vector<NodeType*> nodeDependencies(const Algorithm* algo) {
   vector<NodeType> result;
