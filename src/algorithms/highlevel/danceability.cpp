@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -171,8 +171,9 @@ void Danceability::compute() {
 
   danceability /= (nFValues-1);
 
-  if (danceability != 0.0) {
-     danceability = 1.0 / danceability;
+  if (danceability > 0.0) {
+    // negative values occur very very seldom, therefore we can ignore them
+    danceability = 1.0 / danceability;
   }
   else {
     danceability = 0.0;

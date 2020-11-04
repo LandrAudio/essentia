@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -48,17 +48,9 @@ void FrameToReal::compute() {
 
   if (frames.empty()) throw EssentiaException("FrameToReal: the input signal is empty");
 
+  // output
   audio.resize(_hopSize);
-
- ////////////////////////////////////
-
-  int i = 0;
-
-    // output
-    for (int i=0; i< _hopSize; i++) {
-        audio[i] = frames[i];
-    }
-
-
+  for (int i=0; i< _hopSize; i++) {
+    audio[i] = frames[i];
+  }
 }
-

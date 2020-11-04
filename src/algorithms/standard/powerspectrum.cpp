@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -24,7 +24,7 @@ using namespace standard;
 
 const char* PowerSpectrum::name = "PowerSpectrum";
 const char* PowerSpectrum::category = "Spectral";
-const char* PowerSpectrum::description = DOC("This algorithm computes the power spectrum of an array of Reals. The resulting power spectrum has a size which is half the size of the input array plus one.\n"
+const char* PowerSpectrum::description = DOC("This algorithm computes the power spectrum of an array of Reals. The resulting power spectrum has a size which is half the size of the input array plus one. Bins contain squared magnitude values.\n"
 "\n"
 "References:\n"
 "  [1] Power Spectrum - from Wolfram MathWorld,\n"

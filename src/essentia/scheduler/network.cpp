@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -57,6 +57,15 @@ set<Algorithm*> visibleDependencies(const Algorithm* algo, bool logWarnings=true
   }
 
   return dependencies;
+}
+
+void deleteNetwork(const streaming::Algorithm* algo) {
+  set<Algorithm*> dependencies = visibleDependencies(algo, false);
+
+  for (set<Algorithm*>::iterator it = dependencies.begin(); it != dependencies.end(); ++it) {
+    delete *it;
+  }
+  delete algo;
 }
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -266,6 +266,13 @@ class ESSENTIA_API Network {
   void clearExecutionNetwork();
 };
 
+
+/**
+* Delete the algorithm together with its all visible dependencies without 
+* creating a network object.
+*/
+void deleteNetwork(const streaming::Algorithm* algo);
+
 /**
 * Delete the algorithm together with its all visible dependencies without 
 * creating a network object.
@@ -288,7 +295,6 @@ AlgoVector computeCompositeDependencies(const streaming::Algorithm* algo);
  * and also avoid doing any allocation while running the network.
  */
 void cacheDependencies(streaming::Algorithm* algo);
-
 
 /**
  * Returns the list of all algorithms which live inside of the given composite

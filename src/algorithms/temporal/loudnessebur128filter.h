@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -39,6 +39,8 @@ class LoudnessEBUR128Filter : public AlgorithmComposite {
   
   SinkProxy<StereoSample> _signal;
   SourceProxy<Real> _signalFiltered;
+
+  scheduler::Network* _network;
 
  public:
   LoudnessEBUR128Filter();

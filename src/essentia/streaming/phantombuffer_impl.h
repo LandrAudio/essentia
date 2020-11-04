@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -188,7 +188,7 @@ inline void PhantomBuffer<T>::resetTurns() {
   int m = _writeWindow.turn;
 
   for (uint i=0; i<_readWindow.size(); i++) {
-    m = std::min(m, _readWindow[i].turn);
+    m = (std::min)(m, _readWindow[i].turn);
   }
   // substract turns
   _writeWindow.turn -= m;

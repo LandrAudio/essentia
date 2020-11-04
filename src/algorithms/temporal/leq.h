@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -34,7 +34,7 @@ class Leq : public Algorithm {
  public:
   Leq() {
     declareInput(_signal, "signal", "the input signal (must be non-empty)");
-    declareOutput(_leq, "leq", "the equivalent sound level estimate");
+    declareOutput(_leq, "leq", "the equivalent sound level estimate [dB]");
   }
 
   void declareParameters() {}
@@ -67,7 +67,7 @@ class Leq : public AccumulatorAlgorithm {
  public:
   Leq() {
     declareInputStream(_signal, "signal", "the input signal (must be non-empty)");
-    declareOutputResult(_leq, "leq", "the equivalent sound level estimate");
+    declareOutputResult(_leq, "leq", "the equivalent sound level estimate [dB]");
     reset();
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -26,10 +26,10 @@ using namespace std;
 namespace essentia {
 namespace streaming {
 
+const char* LevelExtractor::name = essentia::standard::LevelExtractor::name;
+const char* LevelExtractor::category = essentia::standard::LevelExtractor::category;
+const char* LevelExtractor::description = essentia::standard::LevelExtractor::description;
 
-const char* LevelExtractor::name = "LevelExtractor";
-const char* LevelExtractor::category = "Loudness/dynamics";
-const char* LevelExtractor::description = DOC("This algorithm extracts the loudness of an audio signal in frames using Loudness algorithm.");
 
 LevelExtractor::LevelExtractor() {
 
@@ -66,9 +66,10 @@ LevelExtractor::~LevelExtractor() {
 namespace essentia {
 namespace standard {
 
-const char* LevelExtractor::name = essentia::streaming::LevelExtractor::name;
-const char* LevelExtractor::category = essentia::streaming::LevelExtractor::category;
-const char* LevelExtractor::description = essentia::streaming::LevelExtractor::description;
+const char* LevelExtractor::name = "LevelExtractor";
+const char* LevelExtractor::category = "Loudness/dynamics";
+const char* LevelExtractor::description = DOC("This algorithm extracts the loudness of an audio signal in frames using Loudness algorithm.");
+
 
 LevelExtractor::LevelExtractor() {
   declareInput(_signal, "signal", "the audio input signal");
