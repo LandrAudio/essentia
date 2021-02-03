@@ -103,6 +103,8 @@ void AudioLoader::openAudioFile(const string& filename) {
     _audioCodec = avcodec_find_decoder(_audioCtx->codec_id);
 
     if (!_audioCodec) {
+        avformat_close_input(&_demuxCtx);
+        _demuxCtx = 0;
         throw EssentiaException("AudioLoader: Unsupported codec!");
     }
 
