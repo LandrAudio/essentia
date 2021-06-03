@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -38,6 +38,7 @@ class ChordsDetectionBeats : public Algorithm {
     Algorithm* _chordsAlgo;
     Real _sampleRate; 
     int _hopSize;
+    std::string _chromaPick;
 
   public:
     ChordsDetectionBeats() {
@@ -54,6 +55,7 @@ class ChordsDetectionBeats : public Algorithm {
     void declareParameters() {
       declareParameter("sampleRate", "the sampling rate of the audio signal [Hz]", "(0,inf)", 44100.);
       declareParameter("hopSize", "the hop size with which the input PCPs were computed", "(0,inf)", 2048);
+      declareParameter("chromaPick", "method of calculating singleton chroma for interbeat interval", "{starting_beat,interbeat_median}", "interbeat_median");
     }
 
     ~ChordsDetectionBeats() {

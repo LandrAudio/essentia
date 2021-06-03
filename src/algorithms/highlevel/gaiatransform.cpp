@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -51,7 +51,12 @@ void GaiaTransform::configure() {
     return;
   }
 
+  try {
   _history.load(QString::fromStdString(filename));
+  }
+  catch (gaia2::GaiaException& e) {
+    throw EssentiaException("GaiaTransform: error loading gaia history: ", e.what());
+  }
 
   _configured = true;
 }

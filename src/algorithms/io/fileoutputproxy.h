@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -40,7 +40,7 @@ class FileOutputProxy : public Algorithm {
   }
 
   void declareParameters() {
-    declareParameter("filename", "the name of the output file", "", "out.txt");
+    declareParameter("filename", "the name of the output file (use '-' for stdout)", "", "out.txt");
     declareParameter("mode", "output mode", "{text,binary}", "text");
   }
 

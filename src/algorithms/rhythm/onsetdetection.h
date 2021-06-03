@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -40,7 +40,7 @@ class OnsetDetection : public Algorithm {
  public:
   OnsetDetection() {
     declareInput(_spectrum, "spectrum", "the input spectrum");
-    declareInput(_phase, "phase", "the phase vector corresponding to this spectrum--used only by the \"complex\" method");
+    declareInput(_phase, "phase", "the phase vector corresponding to this spectrum (used only by the \"complex\" method)");
     declareOutput(_onsetDetection, "onsetDetection", "the value of the detection function in the current frame");
 
     _hfc = AlgorithmFactory::create("HFC");

@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+# Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
 #
 # This file is part of Essentia
 #
@@ -26,7 +26,7 @@ from numpy import *
 try:
     filename = sys.argv[1]
 except:
-    print "usage:", sys.argv[0], "<input-audiofile>"
+    print("usage: %s <input-audiofile>" % sys.argv[0])
     sys.exit()
 
 
@@ -49,7 +49,7 @@ pitch, confidence = run_predominant_melody(audio)
 
 
 n_frames = len(pitch)
-print "number of frames:", n_frames
+print("number of frames: %d" % n_frames)
 
 # Visualize output pitch values
 fig = plt.figure()

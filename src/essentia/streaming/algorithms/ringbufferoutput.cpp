@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -26,6 +26,7 @@ namespace essentia {
 namespace streaming {
 
 const char* RingBufferOutput::name = "RingBufferOutput";
+const char* RingBufferOutput::category = "Input/Output";
 const char* RingBufferOutput::description = DOC("This algorithm fills an output ringbuffer of type Real that can be read from a different thread then.");
 
 RingBufferOutput::RingBufferOutput() : _impl(0)

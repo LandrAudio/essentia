@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -600,11 +600,6 @@ void computeLowLevel(const string& audioFilename, Pool& neqloudPool, Pool& eqlou
                      * eqloudPool.value<Real>("metadata.audio_properties.analysis_sample_rate"));
     }
   }
-
-
-  // delete network only now, because we needed audio_2->output("audio") to
-  // compute the onset rate on the previous line.
-  //deleteNetwork(audio_2);
 }
 
 // outdated beat tracker

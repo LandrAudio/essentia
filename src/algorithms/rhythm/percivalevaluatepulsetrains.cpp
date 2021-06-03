@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -49,7 +49,7 @@ void PercivalEvaluatePulseTrains::calculatePulseTrains(const std::vector<Real>& 
     vector<Real> bpMagnitudes;
     int period = lag;
     bpMagnitudes.resize(lag);
-    int samples = ossWindow.size();
+    //int samples = ossWindow.size();
     for (int phase=0; phase < period; ++phase){
     	Real currentMagScore;
     	currentMagScore = 0.0;
@@ -89,7 +89,7 @@ void PercivalEvaluatePulseTrains::compute() {
   tempoScores.resize(peakPositions.size());
   vector<Real> onsetScores;
   onsetScores.resize(peakPositions.size());
-  for (int i=0; i< peakPositions.size(); ++i) {
+  for (int i=0; i<(int)peakPositions.size(); ++i) {
   	Real candidate = peakPositions[i];
   	if (candidate != 0) {
   		int lag = (int) round(candidate);
@@ -104,7 +104,7 @@ void PercivalEvaluatePulseTrains::compute() {
   comboScores.resize(peakPositions.size());
   Real sumTempoScores = sum(tempoScores);
   Real sumOnsetScroes = sum(onsetScores);
-  for (int i=0; i< peakPositions.size(); ++i) {
+  for (int i=0; i<(int)peakPositions.size(); ++i) {
   	comboScores[i] = tempoScores[i]/sumTempoScores + onsetScores[i]/sumOnsetScroes;
   }
   // NOTE: original python implementation normalizes comboScores (like tempoScores and onsetScore).

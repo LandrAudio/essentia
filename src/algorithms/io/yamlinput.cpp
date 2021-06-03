@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -102,7 +102,10 @@ void YamlInput::compute() {
       char* jsonChar = new char[filesize];
       rewind(file);
       // Load to string
-      fread(jsonChar, sizeof(char), filesize, file);
+      size_t result = fread(jsonChar, sizeof(char), filesize, file);
+      if (result != filesize) {
+        throw EssentiaException("YamlInput: error reading the json file");
+      }
       
       string yamlString = JsonConvert(string(jsonChar, filesize)).parseDict();
       yamlString = unescapeJsonString(yamlString);

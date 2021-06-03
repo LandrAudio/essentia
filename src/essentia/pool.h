@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -77,7 +77,7 @@ typedef std::string DescriptorName;
  * into a Pool using the YamlInput algorithm.
  *
  * For each type, the pool has its own public mutex (i.e. mutexReal, mutexVectorReal, etc.)
- * If locking the pool gobally or partially, lock should be acquired in the following order:
+ * If locking the pool globally or partially, lock should be acquired in the following order:
  *
  *         MutexLocker lockReal(mutexReal)
  *         MutexLocker lockVectorReal(mutexVectorReal)
@@ -89,6 +89,7 @@ typedef std::string DescriptorName;
  *         MutexLocker lockSingleString(mutexSingleString)
  *         MutexLocker lockSingleVectorReal(mutexSingleVectorReal)
  *         MutexLocker lockSingleArray2DReal(mutexSingleArray2DReal)
+ *         MutexLocker lockSingleVectorString(mutexSingleVectorString)
  *
  * To release the locks, the order should be reversed!
  *
@@ -99,8 +100,10 @@ class ESSENTIA_API Pool {
   // maps for single values:
   std::map<std::string, Real> _poolSingleReal;
   std::map<std::string, std::string> _poolSingleString;
-  std::map<std::string, std::vector<Real> > _poolSingleVectorReal;
+  std::map<std::string, std::vector<Real> > _poolSingleVectorReal;  
+  std::map<std::string, std::vector<std::string> > _poolSingleVectorString;
   std::map<std::string, TNT::Array2D<Real> > _poolSingleArray2DReal;
+  std::map<std::string, Tensor<Real> > _poolSingleTensorReal;
 
   // maps for vectors of values:
   PoolOf(Real) _poolReal;
@@ -108,6 +111,7 @@ class ESSENTIA_API Pool {
   PoolOf(std::string) _poolString;
   PoolOf(std::vector<std::string>) _poolVectorString;
   PoolOf(TNT::Array2D<Real>) _poolArray2DReal;
+  PoolOf(Tensor<Real>) _poolTensorReal;
   PoolOf(StereoSample) _poolStereoSample;
 
   // WARNING: this function assumes that all sub-pools are locked
@@ -124,7 +128,9 @@ class ESSENTIA_API Pool {
 
   mutable Mutex mutexReal, mutexVectorReal, mutexString, mutexVectorString,
                 mutexArray2DReal, mutexStereoSample,
-                mutexSingleReal, mutexSingleString, mutexSingleVectorReal, mutexSingleArray2DReal;
+                mutexSingleReal, mutexSingleString, mutexSingleVectorReal,
+                mutexSingleVectorString, mutexSingleArray2DReal,
+                mutexTensorReal, mutexSingleTensorReal;
 
   /**
    * Adds @e value to the Pool under @e name
@@ -162,6 +168,9 @@ class ESSENTIA_API Pool {
   /** @copydoc add(const std::string&,const Real&,bool) */
   void add(const std::string& name, const TNT::Array2D<Real>& value, bool validityCheck = false);
 
+  /** @copydoc add(const std::string&,const Tensor<Real>& value,bool) */
+  void add(const std::string& name, const Tensor<Real>& value, bool validityCheck = false);
+
   /** @copydoc add(const std::string&,const Real&,bool) */
   void add(const std::string& name, const StereoSample& value, bool validityCheck = false);
 
@@ -190,6 +199,8 @@ class ESSENTIA_API Pool {
    *         function. An EssentiaException will be thrown if the given
    *         descriptor name already exists in the pool and was put there via a
    *         call to an add function.
+   * @param validityCheck indicates whether @e value should be checked for NaN or Inf values. If
+   *                      true, an exception is thrown if @e value is (or contains) a NaN or Inf.
    */
   void set(const std::string& name, const Real& value, bool validityCheck=false);
 
@@ -200,7 +211,13 @@ class ESSENTIA_API Pool {
   void set(const std::string& name, const std::string& value, bool validityCheck=false);
 
   /** @copydoc set(const std::string&,const Real&i, bool) */
+  void set(const std::string& name, const std::vector<std::string>& value, bool validityCheck=false);
+
+  /** @copydoc set(const std::string&,const TNT::Array2D<Real>&i, bool) */
   void set(const std::string& name, const TNT::Array2D<Real>& value, bool validityCheck=false);
+
+  /** @copydoc set(const std::string&, const Tensor<Real>& value, bool) */
+  void set(const std::string& name, const Tensor<Real>& value, bool validityCheck=false);
 
   /**
    * \brief Merges the current pool with the given one @e p.
@@ -244,6 +261,9 @@ class ESSENTIA_API Pool {
   void merge(const std::string& name, const std::vector<TNT::Array2D<Real> >& value, const std::string& type="");
 
   /** @copydoc merge(const std::string&, const std::vector<Real>&, const std::string&)*/
+  void merge(const std::string& name, const std::vector<Tensor<Real> >& value, const std::string& type="");
+
+  /** @copydoc merge(const std::string&, const std::vector<Real>&, const std::string&)*/
   void merge(const std::string& name, const std::vector<StereoSample>& value, const std::string& type="");
 
   /** @copydoc merge(const std::string&, const std::vector<Real>&, const std::string&)*/
@@ -253,8 +273,11 @@ class ESSENTIA_API Pool {
   /** @copydoc merge(const std::string&, const std::vector<Real>&, const std::string&)*/
   void mergeSingle(const std::string& name, const std::string& value, const std::string& type="");
   /** @copydoc merge(const std::string&, const std::vector<Real>&, const std::string&)*/
+  void mergeSingle(const std::string& name, const std::vector<std::string>& value, const std::string& type="");
+  /** @copydoc merge(const std::string&, const TNT::Array2D<Real>&, const std::string&)*/
   void mergeSingle(const std::string& name, const TNT::Array2D<Real>& value, const std::string& type="");
-
+  /** @copydoc merge(const std::string&, const std::vector<Real>&, const std::string&)*/
+  void mergeSingle(const std::string& name, const Tensor<Real> & value, const std::string& type="");
   /**
    * Removes the descriptor name @e name from the Pool along with the data it
    * points to. This function does nothing if @e name does not exist in the
@@ -265,9 +288,9 @@ class ESSENTIA_API Pool {
 
   /**
    * Removes the entire namespace given by @e ns from the Pool along with the
-   * data itpoints to. This function does nothing if @e name does not exist in
+   * data it points to. This function does nothing if @e ns does not exist in
    * the Pool.
-   * @param name the descriptor name to remove
+   * @param ns the descriptor namespace to remove
    */
   void removeNamespace(const std::string& ns);
 
@@ -281,7 +304,7 @@ class ESSENTIA_API Pool {
 
   /**
    * @returns whether the given descriptor name exists in the pool
-   * @param the name of the descriptor you wish to check for
+   * @param name is the name of the descriptor you wish to check for
    * @tparam T is the type of data that @e name refers to
    */
   template <typename T>
@@ -330,6 +353,12 @@ class ESSENTIA_API Pool {
 
   /**
    * @returns a std::map where the key is a descriptor name and the values are
+   *          of type Tensor<Real>
+   */
+  const PoolOf(Tensor<Real>)& getTensorRealPool() const { return _poolTensorReal; }
+
+  /**
+   * @returns a std::map where the key is a descriptor name and the values are
    *          of type StereoSample
    */
   const PoolOf(StereoSample)& getStereoSamplePool() const { return _poolStereoSample; }
@@ -354,9 +383,21 @@ class ESSENTIA_API Pool {
 
   /**
    * @returns a std::map where the key is a descriptor name and the value is
-   *          of type vector<Real>
+   *          of type vector<string>
+   */
+  const std::map<std::string, std::vector<std::string> >& getSingleVectorStringPool() const { return _poolSingleVectorString; }
+
+  /**
+   * @returns a std::map where the key is a descriptor name and the value is
+   *          of type TNT::Array2D<Real>
    */
   const std::map<std::string, TNT::Array2D<Real> >& getSingleArray2DRealPool() const { return _poolSingleArray2DReal; }
+
+  /**
+   * @returns a std::map where the key is a descriptor name and the value is
+   *          of type Tensor<Real>
+   */
+  const std::map<std::string, Tensor<Real> >& getSingleTensorRealPool() const { return _poolSingleTensorReal; }
 
   /**
    * Checks that no descriptor name is in two different inner pool types at
@@ -397,11 +438,13 @@ inline const type& Pool::value(const std::string& name) const {                \
 
 SPECIALIZE_VALUE(Real, SingleReal);
 SPECIALIZE_VALUE(std::string, SingleString);
-SPECIALIZE_VALUE(TNT::Array2D<Real>, SingleArray2DReal);
-SPECIALIZE_VALUE(std::vector<std::string>, String);
+//SPECIALIZE_VALUE(std::vector<std::string>, String);
 SPECIALIZE_VALUE(std::vector<std::vector<Real> >, VectorReal);
 SPECIALIZE_VALUE(std::vector<std::vector<std::string> >, VectorString);
 SPECIALIZE_VALUE(std::vector<TNT::Array2D<Real> >, Array2DReal);
+SPECIALIZE_VALUE(std::vector<Tensor<Real> >, TensorReal);
+SPECIALIZE_VALUE(TNT::Array2D<Real>, SingleArray2DReal);
+SPECIALIZE_VALUE(Tensor<Real>, SingleTensorReal);
 SPECIALIZE_VALUE(std::vector<StereoSample>, StereoSample);
 
 // This value function is not under the macro above because it needs to check
@@ -431,6 +474,32 @@ inline const std::vector<Real>& Pool::value(const std::string& name) const {
   throw EssentiaException(msg);
 }
 
+// This value function is not under the macro above because it needs to check
+// in two separate sub-pools (poolString and poolSingleVectorString)
+template<>
+inline const std::vector<std::string>& Pool::value(const std::string& name) const {
+  std::map<std::string, std::vector<std::string> >::const_iterator result;
+  {
+    MutexLocker lock(mutexString);
+    result = _poolString.find(name);
+    if (result != _poolString.end()) {
+      return result->second;
+    }
+  }
+
+  {
+    MutexLocker lock(mutexSingleVectorString);
+    result = _poolSingleVectorString.find(name);
+    if (result != _poolSingleVectorString.end()) {
+      return result->second;
+    }
+  }
+
+  std::ostringstream msg;
+  msg << "Descriptor name '" << name << "' of type "
+      << nameOfType(typeid(std::vector<std::string>)) << " not found";
+  throw EssentiaException(msg);
+}
 
 // bool Pool::contains(const DescriptorName& name)
 #define SPECIALIZE_CONTAINS(type, tname)                                       \
@@ -446,10 +515,12 @@ inline bool Pool::contains<type>(const std::string& name) const {              \
 
 SPECIALIZE_CONTAINS(Real, SingleReal);
 SPECIALIZE_CONTAINS(std::string, SingleString);
-SPECIALIZE_CONTAINS(std::vector<std::string>, String);
+//SPECIALIZE_CONTAINS(std::vector<std::string>, String);
 SPECIALIZE_CONTAINS(std::vector<std::vector<Real> >, VectorReal);
 SPECIALIZE_CONTAINS(std::vector<std::vector<std::string> >, VectorString);
 SPECIALIZE_CONTAINS(std::vector<TNT::Array2D<Real> >, Array2DReal);
+SPECIALIZE_CONTAINS(std::vector<Tensor<Real> >, TensorReal);
+SPECIALIZE_CONTAINS(Tensor<Real> , SingleTensorReal);
 SPECIALIZE_CONTAINS(std::vector<StereoSample>, StereoSample);
 
 // This value function is not under the macro above because it needs to check
@@ -477,6 +548,30 @@ inline bool Pool::contains<std::vector<Real> >(const std::string& name) const {
 }
 
 
+// This value function is not under the macro above because it needs to check
+// in two separate sub-pools (poolString and poolSingleVectorString)
+template<>
+inline bool Pool::contains<std::vector<std::string> >(const std::string& name) const {
+  std::map<std::string, std::vector<std::string> >::const_iterator result;
+  {
+    MutexLocker lock(mutexString);
+    result = _poolString.find(name);
+    if (result != _poolString.end()) {
+      return true;
+    }
+  }
+
+  {
+    MutexLocker lock(mutexSingleVectorString);
+    result = _poolSingleVectorString.find(name);
+    if (result != _poolSingleVectorString.end()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 // Used to get a lock over all sub-pools, make sure to update this when adding
 // a new sub-pool
 #define GLOBAL_LOCK                                         \
@@ -485,12 +580,14 @@ MutexLocker lockVectorReal(mutexVectorReal);                \
 MutexLocker lockString(mutexString);                        \
 MutexLocker lockVectorString(mutexVectorString);            \
 MutexLocker lockArray2DReal(mutexArray2DReal);              \
+MutexLocker lockTensorReal(mutexTensorReal);              \
 MutexLocker lockStereoSample(mutexStereoSample);            \
 MutexLocker lockSingleReal(mutexSingleReal);                \
 MutexLocker lockSingleString(mutexSingleString);            \
 MutexLocker lockSingleVectorReal(mutexSingleVectorReal);    \
-MutexLocker lockSingleArray2DReal(mutexSingleArray2DReal);
-
+MutexLocker lockSingleVectorString(mutexSingleVectorString);\
+MutexLocker lockSingleArray2DReal(mutexSingleArray2DReal);  \
+MutexLocker lockSingleTensorReal(mutexSingleTensorReal);
 
 
 

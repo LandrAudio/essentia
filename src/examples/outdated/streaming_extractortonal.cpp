@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -205,7 +205,7 @@ void TonalDescriptors(SourceBase& input, Pool& pool, const Pool& options, const 
                                          "bandPreset", true,
                                          "minFrequency", 40.0,
                                          "maxFrequency", 5000.0,
-                                         "splitFrequency", 500.0,
+                                         "bandSplitFrequency", 500.0,
                                          "weightType", "cosine",
                                          "nonLinear", true,
                                          "windowSize", 0.5);
@@ -238,7 +238,7 @@ void TonalDescriptors(SourceBase& input, Pool& pool, const Pool& options, const 
                                           "bandPreset", true,
                                           "minFrequency", 40.0,
                                           "maxFrequency", 5000.0,
-                                          "splitFrequency", 500.0,
+                                          "bandSplitFrequency", 500.0,
                                           "weightType", "cosine",
                                           "nonLinear", true,
                                           "windowSize", 0.5);

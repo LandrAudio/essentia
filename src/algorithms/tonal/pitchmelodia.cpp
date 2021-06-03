@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -425,6 +425,7 @@ AlgorithmStatus PitchMelodia::process() {
   _pitchContoursMelody->compute();
 
   _pitch.push(pitch);
+  _pitchConfidence.push(pitchConfidence);
 
   return FINISHED;
 }
