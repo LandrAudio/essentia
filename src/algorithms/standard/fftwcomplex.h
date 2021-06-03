@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -44,6 +44,8 @@ class FFTWComplex : public Algorithm {
 
   void declareParameters() {
     declareParameter("size", "the expected size of the input frame. This is purely optional and only targeted at optimizing the creation time of the FFT object", "[1,inf)", 1024);
+    declareParameter("negativeFrequencies", "returns the full spectrum or just the positive frequencies", "{true,false}", false);
+
   }
 
   void compute();
@@ -54,13 +56,12 @@ class FFTWComplex : public Algorithm {
   static const char* description;
 
  protected:
-  friend class IFFTW;
-  static ForcedMutex globalFFTWCOMPLEXMutex;
-
   fftwf_plan _fftPlan;
   int _fftPlanSize;
   std::complex<Real>* _input;
   std::complex<Real>* _output;
+
+  bool _negativeFrequencies;
 
   void createFFTObject(int size);
 };

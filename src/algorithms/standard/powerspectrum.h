@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -38,7 +38,7 @@ class PowerSpectrum : public Algorithm {
  public:
   PowerSpectrum() {
     declareInput(_signal, "signal", "the input signal");
-    declareOutput(_powerSpectrum, "powerSpectrum", "the power spectrum of the input signal");
+    declareOutput(_powerSpectrum, "powerSpectrum", "power spectrum of the input signal");
 
     // creation of the FFT algorithm
     _fft = AlgorithmFactory::create("FFT");

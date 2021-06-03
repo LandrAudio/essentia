@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+# Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
 #
 # This file is part of Essentia
 #
@@ -23,10 +23,29 @@ import essentia.standard
 import essentia.streaming
 import yaml
 
+import argparse
+
+
 
 def find_dependencies(mode, algo):
+    if algo in ['MusicExtractor', 'FreesoundExtractor']:
+        # FIXME These are special algorithms that instantiate all dependencies
+        # inside compute(). Ideally, they should be rewritten to do that in
+        # configure() methods. Feeding a test audiofile as an input.
+        print("Running compute() for", algo)
 
-    code = """
+        code = """
+import essentia.%s as es
+import essentia
+from essentia.pytools.io import test_audiofile
+test_audio = test_audiofile()
+
+essentia.log.infoActive = True
+essentia.log.debugLevels += essentia.EFactory
+es.%s()(test_audio)
+""" % (mode, algo)
+    else:
+        code = """
 import essentia.%s as es
 import essentia
 
@@ -35,11 +54,12 @@ essentia.log.debugLevels += essentia.EFactory
 loader = es.%s()
 """ % (mode, algo)
 
-    proc = subprocess.Popen(["python", "-c", code], stdout=subprocess.PIPE)
-    stdout = proc.communicate()[0].split('\n')
+    proc = subprocess.Popen([sys.executable, "-c", code], stderr=subprocess.PIPE)
+    stderr = proc.communicate()[1].decode('utf8').split('\n')
 
     # function to assign nested dict elements by a list of nested keys
     def set_val(d, keys, val):
+        from functools import reduce # Python 3 compatibility
         reduce(lambda x,y: x[y], keys[:-1], d)[keys[-1]] = val
 
     algos = []
@@ -49,7 +69,7 @@ loader = es.%s()
     previous_indent = -8
 
     # NOTE: the code relies heavily on indentification of output in Essentia's logger
-    for line in stdout:
+    for line in stderr:
         if line.startswith("[Factory   ] "):
         
             line = line.replace("[Factory   ] ", "")
@@ -77,64 +97,80 @@ loader = es.%s()
 
             previous_indent = indent
  
-    algos = sorted(list(set(algos) - set([(mode, algo)])))
+    algos = sorted(list(set(algos)))
+    #algos = sorted(list(set(algos) - set([(mode, algo)])))
     return algos, tree, lines
 
 
 def print_dependencies(algos, tree=None, lines=None):
-    print "Dependencies:"
-    for m,a in algos:
-        print m + '\t' + a
-    print
+    print("Dependencies:")
+    for m,a in set(algos):
+        print(m + '\t' + a)
+    print('')
 
     if tree:
-        print "Dependencies tree (yaml)"
-        print yaml.safe_dump(tree, indent=4)
+        print("Dependencies tree (yaml)")
+        print(yaml.safe_dump(tree, indent=4))
 
 
     if lines:
-        print "Essentia logger output"
-        print '\n'.join(lines)
-        print 
-        print
+        print("Essentia logger output")
+        print('\n'.join(lines))
+        print('')
+        print('')
 
 
 
+if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser(description="Analyze Essentia's algorithm dependencies.")
 
-try:
-    algo = sys.argv[1]
-    mode = sys.argv[2]
-except:
-    if len(sys.argv) > 1:
-        print 'usage:', sys.argv[0], '[<algo_name> <streaming|standard>]'
+    parser.add_argument("-a", "--algorithm", dest="algo", 
+                                             help="algorithm to inspect",
+                                             action="append",
+                                             choices=set(essentia.standard.algorithmNames() + essentia.streaming.algorithmNames()))
+    parser.add_argument("-m", "--mode", dest="mode", 
+                                        help="mode (streaming, standard)", 
+                                        choices=set(("standard", "streaming")))
+
+    args = vars(parser.parse_args())
+
+    streaming = essentia.streaming.algorithmNames()
+    standard = essentia.standard.algorithmNames()
+
+    print("Found %d streaming algorithms" % len(streaming))
+    print("Found %d standard algorithms" % len(standard))
+    print("%d algorithms in with both modes" % len(set(streaming) & set(standard)))
+    print("%d algorithms in total" % len(set(streaming) | set(standard)))
+    print('')
+
+    algos = [(a, "standard") for a in standard] + [(a, "streaming") for a in streaming]
+
+    if args['algo']:
+        algos = [(a, m) for a, m in algos if a in args['algo']]
+    else:
+        print("Algorithm was not specified. Analyze dependencies for all algorithms")
+
+    if args['mode']: 
+        algos = [(a, m) for a, m in algos if m==args['mode']]
+    else:
+        print("Mode was not specified. Analyze dependencies for both modes")
+
+    if not algos and args['algo'] and args['mode']:
+        print('Algorithm "' + args['algo'] + '" not found in essentia.' + args['mode'])
         sys.exit()
-    algo = None
-    mode = None
 
-algos = { 'standard': essentia.standard.algorithmNames(), 
-          'streaming': essentia.streaming.algorithmNames() }
+    all_dependencies = []
 
+    for algo, mode in algos:
+        print("---------- %s : %s ----------" % (mode, algo))
+        dependencies, tree, _ = find_dependencies(mode, algo)  
+        #print_dependencies(dependencies, tree)
+        print_dependencies(dependencies)
+        all_dependencies += dependencies
 
-if algo: 
-    # search dependencies recursively for algo
-    try:
-        if algo not in algos[mode]:
-            print 'Algorithm "' + algo + '" not found in essentia.' + mode
-            raise
-    except:
-        # mode != standard|streaming
-        print 'usage:', sys.argv[0], '[<algo_name> <streaming|standard>]'
-        sys.exit()
+    algos = sorted(list(set([a for m,a in all_dependencies])))
+    print("The following %d algorithms will be required for building Essentia:" % len(algos))
 
-    print "---------- %s : %s ----------" % (mode, algo)
-    
-    dependencies, tree, _ = find_dependencies(mode, algo)  
-    print_dependencies(dependencies, tree)
-
-else:
-    # search dependencies non-recursively for all algorithms
-    for mode in ['standard', 'streaming']:
-        for algo in algos[mode]:
-            print "---------- %s : %s ----------" % (mode, algo)
-            print_dependencies(*find_dependencies(mode, algo))
+    for a in algos:
+        print(a)

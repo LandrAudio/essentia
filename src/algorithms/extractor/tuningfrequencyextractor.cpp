@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -26,9 +26,10 @@ using namespace std;
 namespace essentia {
 namespace streaming {
 
-const char* TuningFrequencyExtractor::name = "TuningFrequencyExtractor";
-const char* TuningFrequencyExtractor::category = "Tonal";
-const char* TuningFrequencyExtractor::description = DOC("This algorithm extracts the tuning frequency of an audio signal");
+const char* TuningFrequencyExtractor::name = essentia::standard::TuningFrequencyExtractor::name;
+const char* TuningFrequencyExtractor::category = essentia::standard::TuningFrequencyExtractor::category;
+const char* TuningFrequencyExtractor::description = essentia::standard::TuningFrequencyExtractor::description;
+
 
 TuningFrequencyExtractor::TuningFrequencyExtractor(): _frameCutter(0), _spectralPeaks(0), _spectrum(0), _tuningFrequency(0), _windowing(0) {
   createInnerNetwork();
@@ -87,9 +88,10 @@ TuningFrequencyExtractor::~TuningFrequencyExtractor() {
 namespace essentia {
 namespace standard {
 
-const char* TuningFrequencyExtractor::name = essentia::streaming::TuningFrequencyExtractor::name;
-const char* TuningFrequencyExtractor::category = essentia::streaming::TuningFrequencyExtractor::category;
-const char* TuningFrequencyExtractor::description = essentia::streaming::TuningFrequencyExtractor::description;
+const char* TuningFrequencyExtractor::name = "TuningFrequencyExtractor";
+const char* TuningFrequencyExtractor::category = "Tonal";
+const char* TuningFrequencyExtractor::description = DOC("This algorithm extracts the tuning frequency of an audio signal");
+
 
 TuningFrequencyExtractor::TuningFrequencyExtractor() {
   declareInput(_signal, "signal", "the audio input signal");

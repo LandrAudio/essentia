@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -35,15 +35,21 @@ const char* GFCC::description = DOC("This algorithm computes the Gammatone-frequ
 "  pp. 4625-4628.");
 
 void GFCC::configure() {
-  _gtFilter->configure("inputSize", parameter("inputSize"),
-		        "sampleRate", parameter("sampleRate"),
-                       "numberBands", parameter("numberBands"),
-                       "lowFrequencyBound", parameter("lowFrequencyBound"),
-                       "highFrequencyBound", parameter("highFrequencyBound"),
-                       "type", "power");
+  _gtFilter->configure(INHERIT("inputSize"),
+                       INHERIT("sampleRate"),
+                       INHERIT("numberBands"),
+                       INHERIT("lowFrequencyBound"),
+                       INHERIT("highFrequencyBound"),
+                       INHERIT("type"));
   _dct->configure("inputSize", parameter("numberBands"),
-                  "outputSize", parameter("numberCoefficients"));
+                  "outputSize", parameter("numberCoefficients"),
+                  INHERIT("dctType"));
   _logbands.resize(parameter("numberBands").toInt());
+
+  _logType = parameter("logType").toLower();
+  _silenceThreshold = parameter("silenceThreshold").toReal();
+  _dbSilenceThreshold = 10 * log10(_silenceThreshold);
+  _logSilenceThreshold = log(_silenceThreshold);
 }
 
 void GFCC::compute() {
@@ -57,9 +63,22 @@ void GFCC::compute() {
   _gtFilter->output("bands").set(bands);
   _gtFilter->compute();
 
-
   for (int i=0; i<int(bands.size()); ++i) {
-    _logbands[i] = amp2db(bands[i]);
+    if (_logType == "dbpow") {
+       _logbands[i] = pow2db(bands[i], _silenceThreshold, _dbSilenceThreshold);
+     }
+     else if (_logType == "dbamp") {
+       _logbands[i] = amp2db(bands[i], _silenceThreshold, _dbSilenceThreshold);
+     }
+     else if (_logType == "log") {
+      _logbands[i] = lin2log(bands[i], _silenceThreshold, _logSilenceThreshold);
+     }
+     else if (_logType == "natural") {
+       _logbands[i] = bands[i];
+     }
+     else {
+       throw EssentiaException("GFCC: Bad 'logType' parameter");
+     }
   }
 
   // compute the DCT of these bands
@@ -67,3 +86,4 @@ void GFCC::compute() {
   _dct->output("dct").set(gfcc);
   _dct->compute();
 }
+

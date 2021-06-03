@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -59,6 +59,15 @@ set<Algorithm*> visibleDependencies(const Algorithm* algo, bool logWarnings=true
   return dependencies;
 }
 
+void deleteNetwork(const streaming::Algorithm* algo) {
+  set<Algorithm*> dependencies = visibleDependencies(algo, false);
+
+  for (set<Algorithm*>::iterator it = dependencies.begin(); it != dependencies.end(); ++it) {
+    delete *it;
+  }
+  delete algo;
+}
+
 /**
  * Return the map of <source_name, connected_algo*> for all sources which are
  * not proxies (ie: all connections that do not cross the boundary of a
@@ -86,15 +95,6 @@ map<string, vector<Algorithm*> > mapVisibleDependencies(const Algorithm* algo) {
   }
 
   return result;
-}
-
-void deleteNetwork(const streaming::Algorithm* algo) {
-  set<Algorithm*> dependencies = visibleDependencies(algo, false);
-
-  for (set<Algorithm*>::iterator it = dependencies.begin(); it != dependencies.end(); ++it) {
-    delete *it;
-  }
-  delete algo;
 }
 
 template <typename NodeType>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -18,6 +18,7 @@
  */
 
 #include "loudnessebur128filter.h"
+#include "essentiamath.h"
 #include "algorithmfactory.h"
 #include "essentiamath.h"
 
@@ -66,9 +67,12 @@ LoudnessEBUR128Filter::LoudnessEBUR128Filter() : AlgorithmComposite() {
 
   // Connect output proxy
   _sum->output("array")             >> _signalFiltered;
+
+  _network = new scheduler::Network(_stereoDemuxer);
 }
 
 LoudnessEBUR128Filter::~LoudnessEBUR128Filter() {
+  delete _network;
 }
 
 void LoudnessEBUR128Filter::configure() {

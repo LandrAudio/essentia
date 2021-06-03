@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -75,7 +75,6 @@ void Extractor::compute() {
   scheduler::Network network(gen);
   network.run();
   if (_rhythm) postProcessOnsetRate(gen, pool);
-  //deleteNetwork(gen); // done automatically when network goes out of scope
   if (_midLevel) computeMidLevel(signal, pool);
   if (_highLevel) computeHighLevel(pool);
   if (_relativeIoi) computeRelativeIoi(pool);

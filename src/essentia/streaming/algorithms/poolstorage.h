@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -125,6 +125,11 @@ class PoolStorage : public PoolStorageBase {
     */
   }
 
+  template <typename T>
+  void addToPool(const Tensor<T>& value) {
+    _pool->add(_descriptorName, value);
+  }
+
   void addToPool(const StereoSample& value) {
     if (_setSingle) {
       throw EssentiaException("PoolStorage::addToPool, setting StereoSample as single value"
@@ -146,11 +151,11 @@ void ESSENTIA_API connect(SourceBase& source, Pool& pool,
              const std::string& descriptorName);
 
 class PoolConnector {
-protected:
+ protected:
   Pool& pool;
   std::string name;
 
-public:
+ public:
   PoolConnector(Pool& p, const std::string& descName) : pool(p), name(descName) {}
 
   friend void operator>>(SourceBase& source, const PoolConnector& pc);

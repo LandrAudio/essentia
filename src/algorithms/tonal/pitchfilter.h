@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016  Music Technology Group - Universitat Pompeu Fabra
+ * Copyright (C) 2006-2020  Music Technology Group - Universitat Pompeu Fabra
  *
  * This file is part of Essentia
  *
@@ -89,7 +89,7 @@ class PitchFilter : public StreamingAlgorithmWrapper {
  protected:
   Sink<std::vector<Real> > _pitchConfidence;
   Sink<std::vector<Real> > _pitch;
-  Source<Real> _pitchFiltered;
+  Source<std::vector<Real> > _pitchFiltered;
 
  public:
   PitchFilter() {
